@@ -1,0 +1,13 @@
+miriam coaster dissertation notes
+
+roi identification: 
+page 60-61
+
+
+for functional imaging parameters: 
+“The 3-D FFE scans produced fewer distortions and higher TSNR in the midbrain than the 2-D EPI scans. “
+
+“
+From the retrospective cardiac gated scan, brainstem motion was determined to be most prominent in the inferior and anterior directions. However, the overall75
+displacement of the midbrain ROIs was less than 5% of a voxel volume, suggesting that motion associated with cardiac pulsatility did not significantly contribute to the noise in the midbrain.
+“

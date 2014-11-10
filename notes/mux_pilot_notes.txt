@@ -1,0 +1,98 @@
+- make run times 8 min 12 sec
+
+remember: 
+* start new protocol with: 
+	t1-weighted
+	t2 scan
+	shim
+	mux scan 
+
+* be sure to check the fermi filter!! 
+* take screen shots of all prescriptions
+* make sure responses are being recorded 
+* make sure the number of slices is <= the max # possible with 	a given TR
+
+- scans: 
+
+- 1) 3 Phase loc
+- 2) shim
+- 3) calbration 1
+- 3) mux3 rest state (have grace do practice MID run)
+- 4) calibration scan
+- 5) mux3 MID run1
+- 6) calbration scan
+- 7) mux1 MID run2
+- 8) t1-weighted scan 
+- 9) t2 scan 
+
+
+———
+
+when running tyler, the MID task started 12 seconds after triggering the scanner
+
+Questions for Bob: 
+
+with the regular MUX1, the phases per acquisition set in that box is the number of volumes in the nifti file, whereas for the mux3, 4 less volumes are returned. 
+
+For MUX1 and MUX 3, for a total of 270 TRs acquired: 
+n phases: 
+268 for MUX1
+264 for MUX3
+
+the # of volumes in the nifti are: 
+268 for MUX1
+260 for MUX3
+
+
+
+_____
+
+slice timing correction: 
+
+_______
+
+total scan time (total TRs): 
+n phases + mux * arc
+
+# of nifti TRs: 
+n phases - 2*mux*(arc-1)+2
+
+_______
+
+# of acquired calibration TRs: 
+
+# cal TRs acquired = mux * (arc - 1) *2
+
+# cal TRs in nifti = (arc - 1)*2
+
+----------
+
+total # of TRs acquired = n phases + mux * arc
+
+total # of calibration TRs = mux * arc * 2
+
+total # of usable TRs = n phases - 2 * mux
+
+total # of 
+
+
+total calibration time in the beginning of the scan (not usable TRs): TR * 
+
+
+total # of usable (non-calibrated scans): n phases - 2 * mux
+
+
+
+
+————
+
+2/22/14
+
+scanning grace: 
+
+- long scan was set to 248 phases per loc
+- 2 shorter scans were 124 phases per loc
+- 1st 2 scans were mux 3
+- 3rd scan was mux 1
+
+all were resting state

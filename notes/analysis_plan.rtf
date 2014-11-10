@@ -1,0 +1,165 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww12600\viewh7800\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 \
+9/13/13\
+\
+start by collapsing over baseline and stress conditions\
+\
+FIG 1: MB clusters sig correlated with RPE & SPE. \
+\
+regressors parametrically modulated by PE estimates: \
+\
+1) RPE for gains\
+2) RPE for losses\
+3) SPE for gains \
+4) SPE for losses\
+\
+\
+HYP: \
+\
+a) RPE cluster will be sig for RPE reg for gains (but not losses)\
+b) SPE cluster will be sig for gains and losses; collapse over them\
+\
+__________\
+\
+\
+FIG 2: RPE and SPE clusters functional connectivity\
+\
+bin trials into -PE, +PE, and ++PE (median split on positive PE trials)\
+\
+so beta series analysis separately for these 3 bins. Look for sig regions showing beta series correlations that follow these linear contrasts: \
+\
+for RPE cluster: ++PE > +PE > -PE\
+\
+for SPE cluster: ++PE & -PE >> +PE\
+\
+HYP: \
+\
+c) sig pattern for RPE cluster & NAcc \
+d) sig pattern for SPE cluster & ACC\
+\
+\
+_____________\
+\
+\
+FIG 3: MB regions sig for aversive stim\
+\
+contrast shock > neutral cues to find sig mb activity for aversive events\
+\
+HYP: some mb cluster will show increased activation for shock > neutral; overlapping with salience PE\
+\
+___________________\
+\
+\
+FIG 4: baseline vs stress context effects on RPE & SPE signaling\
+\
+\
+compare levels of activation in RPE and SPE clusters for ++PE, +PE, and -PE \
+for baseline vs stress\
+\
+HYP: \
+\
+e) RPE cluster will be attenuated for all +PEs during stress\
+f) SPE cluster\'85?\
+\
+\
+_____________\
+\
+\
+FIG 5: relationship between aversive mb cluster activity, RPE/SPE cluster activity, and behavior\
+\
+HYP:\
+\
+g) aversive cluster activation will correlate with: \
+\
+	- perceived stress\
+	- behavioral differences in the gains condition between baseline and stress contexts\
+	- attentuation of RPE activation during stress\
+	- attenuation of RPE func connectivity with NAcc during stress\
+	- changes in SPE activation levels during stress\
+	- changes in SPE func connectivity with the ACC during stress\
+\
+_____________\
+\
+\
+* notes: \
+\
+what behavioral changes are expected for baseline vs stress??\
+\
+\
+\
+__________________\
+_________________\
+\
+9/9/13 \
+\
+Analysis 1: identify midbrain ROIs that display response profiles consist with RPE and salience PE.\
+\
+Model: outcome periods with the following regressors: \
+1) all outcomes in the gains condition\
+2) all outcomes in the loss condition\
+3) parametric modulation of RPE and \
+4) SPE for gains\
+5) parametric modulation of RPE and \
+6) SPE for losses\
+\
+\
+* or should I model the outcome period with a different regressor for the outcome types (win/nothing and lose/nothing) along with the beta series?\
+\
+\
+1) RPE response profile: \
+\
+in the gains condition, look for a cluster thats significantly correlated with modeled RPE responses, such that activity increases with increased positive PE and decreases with negative RPE. Also look for this across both the gains and losses condition \
+\
+Hyp 1: a VTA cluster will display this response profile. \
+\
+\
+2) Salience PE response profile: \
+\
+for gains and losses, identify clusters that correlate with the absolute value of modeled PE, such that activity increases as the absolute value of PE gets bigger. \
+\
+Hyp 2: a midbrain cluster (distinct from the VTA) will display this response profile.\
+\
+_______________________________\
+\
+Analysis 2: use these midbrain ROIs as seed regions to evaluate their task-dependent functional connectivity with the basal ganglia, habenula, and PFC. \
+\
+Model: Bin trial outcome periods into 3 categories: negative PE, positive PE, and small positive PE (median split for positive PE outcomes). Evaluate FC (using beta series analyses) with the midbrain clusters for these three bins. \
+\
+* potentially use just two bins for + and - PEs\
+\
+3) hyp 3 : RPE midbrain cluster will display increased FC with the NAcc for positive PEs and baseline FC for small & negative PEs\
+\
+4) hyp 4 : salience midbrain cluster will display increased FC with the ACC for positive and negative PEs, but decreased FC for small PEs\
+\
+\
+________________________________\
+\
+Analysis 3: determine impact of stress context on these results and evaluate the ROI's response to a noxious stimulus\
+\
+Model(s): \
+- contrast response to shock vs neutral events to get a contrast map of shock response\
+- redo same analyses as before for the stress context. \
+\
+hyp 5: \
+\
+- conduct functional connectivity analyses to assess for differences in functional connectivity for positive and negative PEs within the basal ganglia, habenula, and PFC. \
+\
+- evaluate changes in activity during the stress condition. \
+\
+\
+\
+\'97\'97\'97\'97\'97\
+\
+note: orthogonalize derivative and dispersion parameters with respect to the hrf because they are only included to reduce error variance, and any shared variance should be attributed to the hrf\
+\
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+note 2: \
+\
+it seems worthwhile to look into the \'93initial dip\'94 period of BOLD signal: from ~0-3 s after stimulus onset. It may be more spatially specific than the later positive BOLD response}
