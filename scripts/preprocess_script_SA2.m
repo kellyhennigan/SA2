@@ -13,10 +13,11 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% EDIT THIS:
 % what directory do the data live in?
-datadir = '/Users/Kelly/SA2/data/9/';
+datadir = '/home/kelly/SA2/data/pilot100513/mux3_run1';
 
 % where should i save figures to?
-figuredir = [datadir 'pp_figs']; % ***
+figuredir = '/home/kelly/SA2/data/pilot100513/mux3_run1/figures';
+
 
 % what NIFTI files should we interpret as the fieldmaps?
 % (to omit the fieldmap-based undistortion process, just set fieldmapB0files to [].)
@@ -60,7 +61,7 @@ fieldmapsmoothing = [];
 inplanefilenames = [];
  
 % what NIFTI files should we interpret as EPI runs?
-epifilenames{1} = [datadir '/run1.nii.gz']; % ***
+epifilenames{1} = '/home/kelly/SA2/data/pilot100513/mux3_run1/mux3_run1.nii.gz'; % ***
 
  
 
@@ -75,8 +76,8 @@ epidesiredinplanesize = [];
  
 % what is the slice order for the EPI runs?
 % special case is [] which means to omit slice time correction.
-episliceorder = [1:2:19,2:2:19];
-% episliceorder = repmat(episliceorder,1,3); % ***
+episliceorder = [1:2:26,2:2:26];
+episliceorder = repmat(episliceorder,1,3); % ***
  
 % what fieldmap should be used for each EPI run? ([] indicates default behavior, which is to attempt
 % to match fieldmaps to EPI runs 1-to-1, or if there is only one fieldmap, apply that fieldmap
@@ -85,7 +86,7 @@ episliceorder = [1:2:19,2:2:19];
 epifieldmapasst = [];
  
 % how many volumes should we ignore at the beginning of each EPI run?
-numepiignore = 5;
+numepiignore = 2;
  
 % what volume should we use as reference in motion correction? ([] indicates default behavior which is
 % to use the first volume of the first run; see preprocessfmri.m for details.  set to NaN if you
@@ -146,16 +147,19 @@ maskoutnans = [];
 % (we automatically make parent directories if necessary, and we also create a mean.nii file
 % with the mean volume and a valid.nii file with a binary mask of the valid voxels.)
 
-savefile = [datadir 'pp_run1.nii.gz']; % ***
+savefile = [datadir '/pp_mux3_run1.nii.gz']; % ***
 
 % what .txt file should we keep a diary in?
-diaryfile = [datadir 'diary_pp_run1.txt'];
+diaryfile = [datadir '/mux3_run1.txt'];
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW:
 
   mkdirquiet(stripfile(diaryfile));
   diary(diaryfile);
+  
+  rp = 2.0; % acceleration factor not in the nifti header for mux sequences
+path('/usr/local/spm8',path)
 preprocessfmri_CNI;
   diary off;
  
