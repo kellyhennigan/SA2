@@ -16,23 +16,25 @@ function p = getSA2Paths(subject)
 
 cName=getComputerName; 
 
-if strcmp(cName,'dn0a221879.sunet')     % laptop
-    baseDir = '/Users/Kelly/SA2/data';
-elseif strcmp(cName,'psy-jal-ml.stanford.edu') % lab desktop
+if strcmp(cName,'psy-jal-ml.stanford.edu') % lab desktop
     baseDir = '/Users/kelly/SA2/data';
-elseif strcmp(cName,'mt-tamalpais') % mt-tam server
+elseif strcmp(cName,'mt-tamalpais')        % mt-tam server
     baseDir = '/home/kelly/SA2/data';
+else                                       % assume it's laptop Pluck
+    baseDir = '/Users/Kelly/SA2/data';
 end
+
 
 p = struct();
 
 p.baseDir = baseDir;
 
 % subject directories
-if ~notDefined(subject)
+if ~notDefined('subject')
     p.subj = fullfile(baseDir, subject);  % subject directory
     p.design_mats = fullfile(p.subj, 'design_mats/');
     p.raw         = fullfile(p.subj, 'raw/');
+    p.behavior    = fullfile(p.subj, 'behavior/');
     p.regs        = fullfile(p.subj, 'regs/');
     p.ROIs        = fullfile(p.subj, 'ROIs/');
     p.stimtimes   = fullfile(p.subj, 'stimtimes/');

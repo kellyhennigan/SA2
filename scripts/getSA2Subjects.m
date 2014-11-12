@@ -1,9 +1,63 @@
-function [subs,cb] = getSA2Subjects()
+function [subjs,CB] = getSA2Subjects(analysis)
 
-% subject strings to include in data analysis
-subs = {'9','10','11','12','14','15','16','17','18','19','20',...
-    '21','23','24','25','26','27','28','29'};
-   
-% context order code corresponding to the subjects above 
-% (1=baseline first, 2=stress first)
-cb = [ 2 2 2 2 1 1 2 2 1 2 1 1 2 2 1 1 1 1 1]; 
+% notes: 
+% last 2 scan runs from subj 28 weren't saved 
+% subjects 21 and 29 didn't learn
+
+
+% all subjects for which there is a full set of behavioral data
+all_subjs = {'9','10','11','12','14','15','16','17','18','19','20','21',...
+    '23','24','25','26','27','28','29'};
+
+
+
+% this only includes subjects that got >55% of gain & loss trials 'correct'
+RL_subjs = {'10','11','14','15','17','18','19',...
+    '23','24','25','26','27','28'};
+
+
+% subjects with good behavior (excluding subjects 21 & 29 bc they didn't learn but
+% including subjects that may be excluded bc of bad MR data
+fmri_subjs = {'9','10','11','12','14','15','16','17','18','19','20','21',...
+    '23','24','25','26','27','29'};
+
+
+if notDefined('analysis')
+    analysis = 'all';
+end
+
+if strcmpi(analysis,'RL')
+    subjs = RL_subjs;
+elseif strcmp(analysis,'fmri')
+    subjs = fmri_subjs;
+else
+  subjs = all_subjs;
+end
+
+
+%% get the corresponding context code for the subject array 
+
+subjCBLookup = [
+9     2
+10    2
+11    2
+12    2
+14    1
+15    1
+16    2
+17    2
+18    1
+19    2
+20    1
+21    1
+23    2
+24    2
+25    1
+26    1
+27    1
+28    1
+29    1];
+
+for i=1:numel(subjs)
+    CB(i,1) = subjCBLookup(subjCBLookup==str2double(subjs{i}),2);
+end

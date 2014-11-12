@@ -1,0 +1,37 @@
+param estimates (a,B) for Q-learning Mod
+
+p0 = [rand(1) rand(1).*10];      % initial parameter values
+% p0=[.2 3];
+p_min = [0 0];    % min param vals 
+p_max = [1 10];    % max param vals
+options = optimset('MaxFunEvals',1000,'MaxIter',1000);
+
+note: fits stay the same when: 
+- initial values are randomized
+- using fminsearch (unbounded) instead of fminsearchbnd (checked for losses, not gains)
+
+note: fits are NOT the same when: 
+- for losses, nothing= 0 and loss= -1 (these estimates are when outcomes are coded as 1=nothing and 0=loss)
+
+
+————— for subjs(‘RL’):
+
+gains:   0.2778    4.6715
+losses:   0.3016    4.2917
+
+
+
+————— for subjs(‘fmri’):
+
+
+gains:  0.1609    3.3481
+losses:   0.2017    3.1582
+
+
+
+————— for subjs(‘all’):
+
+gains:      0.1724    3.3236
+losses:     0.2224    3.1259
+
+

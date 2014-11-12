@@ -1,24 +1,16 @@
 
-% define data dir
-dataDir = '/Users/Kelly/Dropbox/SA2/expPres/data';
+
+clear all
 
 % get subjects
-[subs,CBs] = getSA2Subjects();
+[subjs,CBs] = getSA2Subjects();
 
-nTrialsPerSet = 36; % 36 trials per set
-nSetsPerRun = 2; % # of sets per scan run
-nRuns = 6; % 6 scan runs
 
 %% per-subject chi-squared table of counts of "good" responses 
 % by condition (gain,loss) x context (baseline,stress)
 
-i=1;
 
-contextComp = zeros(2,1);
-
-cd(dataDir)
-
-for i=1:19
+for i=1:numel(subs)
     
 sub = subs{i};
 
@@ -27,7 +19,7 @@ cd(subs{i})
 cb = CBs(i);
 
 for r=1:nRuns
-    f=dir(['run' num2str(r) '_task_trials*']);
+    f=dir(['run' num2str(r) '*_task_trials*']);
     [run_set_num,set_trial_num,cond,cue_onset,response,...
         cue_choice,rt,outcome,outcome_onset] = getSA2BehData(f(end).name);
     
@@ -42,7 +34,9 @@ if cb==2
     goodRespCounts = fliplr(goodRespCounts);
 end
 
-base_vs_stress(i,:) = [goodRespCounts(:,1)-goodRespCounts(:,2)]';
+GLgood(i,:) = sum(goodRespCounts');
+
+% base_vs_stress(i,:) = [goodRespCounts(:,1)-goodRespCounts(:,2)]';
 %% 
 cd ..
 
