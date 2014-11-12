@@ -16,18 +16,14 @@ close all
 rand_seed=rng('shuffle'); % initialize random seed generator
 
 % define subjects
-subjs = getSA2Subjects('RL');
+subjs = getSA2Subjects('all');
 
-cond = 'gain';
+cond = 'loss';
 
 %% now find best parameter values 
 
 % get trial choices and outcomes
-[choices,outcomes]=getSubjChoicesOutcomes(subjs,cond);
-
-if strcmp(cond,'loss')
-    outcomes = (outcomes.*-1)+1;
-end
+[choices,outcomes]=getSubjChoicesOutcomes(subjs,cond,'base');
 
 
 % define parameters and options for fminsearch

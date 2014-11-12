@@ -1,4 +1,4 @@
-function [nll,d,Pc_all] = fitQLearningMod(p,choice,reward)
+function [nll,d,Pc1] = fitQLearningMod(p,choice,reward)
 % --------------------------------
 % usage: action value Q-learning RL model
 %
@@ -12,6 +12,7 @@ function [nll,d,Pc_all] = fitQLearningMod(p,choice,reward)
 %        this is defined as -log( ? P(c(t) | Q(t,1), Q(t,2)) ) 
 %        where P(c(t)) is calculated using a softmax function w/inverse temperature parameter B
 %   d: nT x nSets matrix of trial prediction errors
+%   Pc1: probability of choosing cue 1 using soft max
 
 
 % NOTES: this is for modeling trials when 2 options are available to the
@@ -30,7 +31,7 @@ nC = 2; % # of cue options
 
 d = nan(nT,nS); % define a matrix for trial prediction errors
 ll = 0; % initialize log-likelihood
-Pc_all = nan(nT,nS);
+Pc1 = nan(nT,nS); % define matrix for model's prob estimates of choosing cue 1
 
 
 %% do it 
@@ -48,6 +49,8 @@ for s = 1:nS    % set loop
           
         if c(t)==1 || c(t)==2 % only analyze trials w/recognizable responses
                  
+            Pc1(t,s) = exp(B*Q(1))/sum(exp(B*Q));  % softmax probability of the choosing cue 1
+               
             Pc = exp(B*Q(c(t)))/sum(exp(B*Q));  % softmax probability of the observed choice, given Q-values
             
             ll = ll + log(Pc); % log-likelihood 
@@ -55,8 +58,6 @@ for s = 1:nS    % set loop
             d(t,s) = r(t) - Q(c(t));  % prediction error
             
             Q(c(t)) = Q(c(t)) + a * d(t,s); % update Q-value for the chosen option
-            
-            Pc_all(t,s) = Pc; 
             
         end 
         

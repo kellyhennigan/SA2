@@ -56,18 +56,25 @@ outcomes = [];
 % load subjects' choices and outcomes
 for i=1:numel(subjs)
     
-    expPaths=getSA2Paths(subjs{i});
+    p=getSA2Paths(subjs{i});
     
-    f=dir([expPaths.behavior,'run*_c' num2str(context) '*task_trials*']);
+    f=dir([p.behavior,'run*_c' num2str(context) '*task_trials*']);
     
     for j =1:numel(f)
         
-        [~,~,trial_cond,~,~,trial_choice,~,trial_outcome,~] = getSA2BehData(fullfile(expPaths.behavior,f(j).name));
+        [~,~,trial_cond,~,~,trial_choice,~,trial_outcome,~] = getSA2BehData(fullfile(p.behavior,f(j).name));
         
         choices(:,end+1) = trial_choice(trial_cond==cond);
+        choices(choices==0)=nan;  % recode no-response trials to NaN
         outcomes(:,end+1) = trial_outcome(trial_cond==cond);
         
+                    
     end
+end
+
+% recode loss outcomes (change from 0=nothing, 1=loss > 0=loss, 1=nothing)
+if cond==2
+    outcomes = (outcomes.*-1)+1;
 end
 
 
