@@ -24,34 +24,34 @@
 
 %% define directories, files, etc.
 
-subj = '26';
+subj = '9';
 
 p=getSA2Paths(subj);
 
 % what directory do the data live in?
-datadir = p.raw;
+inDir = p.raw;
 
 % where should i save figures to?
 figuredir = fullfile(p.func_proc,'figures');
 
 % where should the preprocessed files be saved to?
-outdir = p.func_proc;
+outDir = p.func_proc;
 
 % what NIFTI files should we interpret as EPI runs?
-epifilenames = {'run1_c1.nii.gz',...
-    'run2_c1.nii.gz',...
-    'run3_c1.nii.gz',...
-    'run4_c2.nii.gz',...
-    'run5_c2.nii.gz',...
-    'run6_c2.nii.gz'};% ***
+epifilenames = {'run1_c2.nii.gz',...
+    'run2_c2.nii.gz',...
+    'run3_c2.nii.gz',...
+    'run4_c1.nii.gz',...
+    'run5_c1.nii.gz',...
+    'run6_c1.nii.gz'};% ***
 
-func_ref_idx = [1 1]; % idx of the run and the vol of the run to align
+func_ref_idx = [3 1]; % idx of the run and the vol of the run to align
 % other functional volumes and anatomical data to. NOTE: the vol idx refers
 % counts AFTER nVolsOmit have been discarded from the run. 
-ref_filename = 'mc_func_vol.nii.gz';
+ref_filename = 'mc_func_vol.nii';
 
 
-anat_filenames = {'t1.nii.gz','t2.nii.gz','pd.nii.gz'}; % anatomical files to coregister w/functional data
+anat_filenames = {'t1.nii','t2.nii','pd.nii'}; % anatomical files to coregister w/functional data
 
 
 nRuns = numel(epifilenames);
@@ -87,7 +87,7 @@ fprintf('loading EPI data...');
 
 for r=1:nRuns
     
-    nii = readFileNifti(fullfile(datadir,epifilenames{r}));
+    nii = readFileNifti(fullfile(inDir,epifilenames{r}));
     nii.data = double(nii.data);
     vox_dim = nii.pixdim(1:3);
     TR = nii.pixdim(4);
@@ -125,7 +125,7 @@ for r=1:nRuns
     end
     
     
-    nii.fname = fullfile(outdir,['a' epifilenames{r}]);
+    nii.fname = fullfile(outDir,['a' epifilenames{r}]);
     writeFileNifti(nii);
     
     
@@ -133,7 +133,7 @@ for r=1:nRuns
     
      if r==func_ref_idx(1)
         vol = nii;
-        vol.fname = fullfile(outdir,ref_filename);
+        vol.fname = fullfile(outDir,ref_filename);
         vol.data = vol.data(:,:,:,func_ref_idx(2));
         writeFileNifti(vol);
      end
@@ -145,7 +145,7 @@ end
 
 %% MOTION CORRECTION
 
-cd(outdir)
+cd(outDir)
 
 for r = 1:nRuns
     
@@ -160,28 +160,29 @@ end
     
     
 
-   %% Coregister T1 to meanravol
+   %% Coregister anatomy with reference functional volume
+   
 %     function coReg( studyDirectory, subjFolder, exp )
     
-    disp('3 - coregistration');
+    disp('coregistration');
     
-    % % Use mean as reference
-    refDir = sprintf('%s/%s/run_0001', studyDirectory, subjFolder); %% NOTE depends on right dir structure
-    cd(refDir);
-    refFolder = pwd;
-    ref = dir('mean*');
-    refFile = ref.name;
-    VG = fullfile(refFolder, refFile);
-    if ischar(VG), VG = spm_vol(VG); end;
+    VG = fullfile(outDir, ref_filename);
+
+    VG = spm_vol(VG);
     
     % % Use anatomy as source
-    anatomyDir = sprintf('%s/%s/anat',studyDirectory, subjFolder);
-    cd(anatomyDir);
-    sourceFolder = pwd;
-    source = dir('anat*');
-    sourceFile = source.name;
-    VF = fullfile(sourceFolder, sourceFile);
-    if ischar(VF) || iscellstr(VF), VF = spm_vol(strvcat(VF)); end;
+    
+    VF = fullfile(inDir,anat_filenames{1});
+     VF = spm_vol(strvcat(VF));
+     
+     
+%     anatomyDir = sprintf('%s/%s/anat',studyDirectory, subjFolder);
+%     cd(anatomyDir);
+%     sourceFolder = pwd;
+%     source = dir('anat*');
+%     sourceFile = source.name;
+%     VF = fullfile(sourceFolder, sourceFile);
+%     if ischar(VF) || iscellstr(VF), VF = spm_vol(strvcat(VF)); end;
     
     % % estimate coregistration
     flags = struct('sep',[4 2],'cost_fun','nmi','fwhm',[7 7],...
