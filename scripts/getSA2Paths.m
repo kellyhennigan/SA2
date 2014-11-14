@@ -34,9 +34,10 @@ p.figures = fullfile(p.baseDir, 'figures/');
 % subject directories
 if ~notDefined('subject')
     p.subj = fullfile(p.data, subject);  % subject directory
-    p.design_mats = fullfile(p.subj, 'design_mats/');
-    p.raw         = fullfile(p.subj, 'raw/');
     p.behavior    = fullfile(p.subj, 'behavior/');
+    p.design_mats = fullfile(p.subj, 'design_mats/');
+    p.func_proc   = fullfile(p.subj, 'func_proc/');
+    p.raw         = fullfile(p.subj, 'raw/');
     p.regs        = fullfile(p.subj, 'regs/');
     p.ROIs        = fullfile(p.subj, 'ROIs/');
     p.stimtimes   = fullfile(p.subj, 'stimtimes/');

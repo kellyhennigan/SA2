@@ -12,17 +12,26 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% EDIT THIS:
+
+subj = '27';
+
+
+p=getSA2Paths(subj);
+
 % what directory do the data live in?
-datadir = '/home/kelly/SA2/data/pilot100513/mux3_run1';
+datadir = p.raw;
 
-% where should i save figures to?
-figuredir = '/home/kelly/SA2/data/pilot100513/mux3_run1/figures';
-
+% what NIFTI files should we interpret as EPI runs?
+epifilenames{1} = 'run1_c1.nii.gz'; % ***
 
 % what NIFTI files should we interpret as the fieldmaps?
 % (to omit the fieldmap-based undistortion process, just set fieldmapB0files to [].)
-fieldmapB0files = [];
-fieldmapMAGfiles = [];
+fieldmapMAGfiles= {'fmap1.nii.gz'};
+fieldmapB0files = {'fmap1_B0.nii.gz'};
+
+% where should i save figures to?
+figuredir = fullfile(p.func_proc,'figures');
+
  
 % if you didn't acquire fieldmaps with the same slice thickness as the 
 % functionals, we can work around this problem if your fieldmaps are
@@ -49,7 +58,7 @@ fieldmapdeltate = [];
 % see preprocessfmri.m for details.)  if accuracy is really important to you and the 2D strategy 
 % does not produce good results, consider switching to a full 3D strategy like 
 % fieldmapunwrap = '-f -t 0' (however, execution time may be very long).
-fieldmapunwrap = 0;
+fieldmapunwrap = 1;
  
 % how much smoothing (in millimeters) along each dimension should we use for the fieldmaps?
 % the optimal amount will depend on what part of the brain you care about.
@@ -60,8 +69,6 @@ fieldmapsmoothing = [];
 % inplanefilenames = matchfiles([datadir '/*inplane*nii*'],'tr');
 inplanefilenames = [];
  
-% what NIFTI files should we interpret as EPI runs?
-epifilenames{1} = '/home/kelly/SA2/data/pilot100513/mux3_run1/mux3_run1.nii.gz'; % ***
 
  
 
@@ -76,7 +83,7 @@ epidesiredinplanesize = [];
  
 % what is the slice order for the EPI runs?
 % special case is [] which means to omit slice time correction.
-episliceorder = [1:2:26,2:2:26];
+sliceOrder = [1:2:19,2:2:19];
 episliceorder = repmat(episliceorder,1,3); % ***
  
 % what fieldmap should be used for each EPI run? ([] indicates default behavior, which is to attempt
