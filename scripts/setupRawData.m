@@ -6,17 +6,12 @@ close all
 
 subj = '27';
 cni_id = '8259'; % (first 4 digits of file names)
-cb = 1;
 
 
 p = getSA2Paths(subj);
 
 %% do it
 
-cbStr = [1 1 1 2 2 2];
-if cb==2
-    cbStr = fliplr(cbStr);
-end
 
 cd(p.raw)
 
@@ -41,7 +36,7 @@ f=f(idx); phys=phys(idx);  phys2=phys2(idx);
 % display found scans
 fprintf('\n functional runs detected (in order): \n\n')
 for i=1:6
-    disp([f(i).name '  >  run' num2str(i) '_c' num2str(cbStr(i)) '.nii.gz']);
+    disp([f(i).name '  >  run' num2str(i) '.nii.gz']);
 end
 
 % continue? 
@@ -51,9 +46,9 @@ if ~strcmpi(c,'y')
     error('stopped script based on user input')
 else
     for i=1:6
-        movefile(f(i).name,['run' num2str(i) '_c' num2str(cbStr(i)) '.nii.gz']);
-        movefile(phys(i).name,['physio_run' num2str(i) '_c' num2str(cbStr(i)) '.tgz']);
-        movefile(phys2(i).name,['physio_regs_run' num2str(i) '_c' num2str(cbStr(i)) '.csv.gz']);
+        movefile(f(i).name,['run' num2str(i) '.nii.gz']);
+        movefile(phys(i).name,['physio_run' num2str(i) '.tgz']);
+        movefile(phys2(i).name,['physio_regs_run' num2str(i) '.csv.gz']);
     end
 end
 
