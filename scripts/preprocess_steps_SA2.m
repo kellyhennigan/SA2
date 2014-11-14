@@ -24,7 +24,7 @@
 
 %% define directories, files, etc.
 
-subj = '27';
+subj = '26';
 
 p=getSA2Paths(subj);
 
@@ -40,7 +40,12 @@ outdir = p.func_proc;
 
 
 % what NIFTI files should we interpret as EPI runs?
-epifilenames = {'run1_c1.nii.gz','run2_c1.nii.gz'};% ***
+epifilenames = {'run1_c1.nii.gz',...
+    'run2_c1.nii.gz',...
+    'run3_c1.nii.gz',...
+    'run4_c2.nii.gz',...
+    'run5_c2.nii.gz',...
+    'run6_c2.nii.gz'};% ***
 
 
 % by default, we tend to use double format for computation.  but if memory is an issue,
@@ -92,25 +97,25 @@ motionCutoff = [];
 % if [], do nothing special (i.e. do not use a mask).
 mcMask = [];
 
-epiignoremcvol = [];
+epiignoremcvol = []; % ignore any volumes for mc? (default is no)
 
 
 
 %% field map correction
 
-doCorrectFieldMap = 1;
+doCorrectFieldMap = 0;
 
 fmapdeltate = 2272; % TE between fieldmap vols (in ms)
 fmaptimes = [];
 
 fmapunwrap = 1;
 
-fmapsmoothing = [7.5 7.5 7.5];
+fmapsmoothing = [];
 
-fmapMAGfiles= {'fmap1.nii.gz'};
-fmapB0files = {'fmap1_B0.nii.gz'};
+fmapMAGfiles= {''};
+fmapB0files = {''};
 
-epifmapasst = [];
+epifmapasst = {};
 
 %% fmri quality checks and figures for inspection
 
@@ -176,31 +181,31 @@ reportmemoryandtime;
 
 %% FIELDMAP CORRECTION
 
-if doCorrectFieldMap
-    
-    % load fieldmap data
-    fprintf('loading fieldmap data...');
+% if doCorrectFieldMap
+%     
+%     % load fieldmap data
+%     fprintf('loading fieldmap data...');
     fmaps = {}; fmapsizes = {}; fmapbrains = {};
-    
-    for r = 1:numel(fmapB0files)
-        % for r=1:numel(fieldmapB0files)
-        fmB0 = readFileNifti(fullfile(datadir,fmapB0files{r}));
-        fmaps{r} = double(fmB0.data) * pi / (1/(fmapdeltate/1000)/2);  % convert to range [-pi,pi]
-        fmapsizes{r} = fmB0.pixdim(1:3);
-        
-        fmMAG = readFileNifti(fmapMAGfiles{r});
-        fmapbrains{r} = double(fmMAG.data(:,:,:,1)); % just use first volume
-        
-        clear fmB0 fmMAG
-        
-    end
-    
-    fprintf('done (loading fieldmap data).\n');
-    
-end
-
-reportmemoryandtime;
-%
+%     
+%     for r = 1:numel(fmapB0files)
+%         % for r=1:numel(fieldmapB0files)
+%         fmB0 = readFileNifti(fullfile(datadir,fmapB0files{r}));
+%         fmaps{r} = double(fmB0.data) * pi / (1/(fmapdeltate/1000)/2);  % convert to range [-pi,pi]
+%         fmapsizes{r} = fmB0.pixdim(1:3);
+%         
+%         fmMAG = readFileNifti(fmapMAGfiles{r});
+%         fmapbrains{r} = double(fmMAG.data(:,:,:,1)); % just use first volume
+%         
+%         clear fmB0 fmMAG
+%         
+%     end
+%     
+%     fprintf('done (loading fieldmap data).\n');
+%     
+% end
+% 
+% reportmemoryandtime;
+% %
 % correctDistortion(fieldmaps,fieldmapbrains,fieldmapsizes,fieldmapdeltate,...
 %     fieldmaptimes,fieldmapunwrap,fieldmapsmoothing,figuredir)
 
@@ -221,7 +226,6 @@ reportmemoryandtime;
 %     reportmemoryandtime;
 % end
 
-%% COMPUTE TEMPORAL SNR
 
 
 
@@ -238,7 +242,7 @@ fmriqualityparams = []
 fmaptimeinterp = []
 
 fprintf('calling preprocessfmri...');
-[epis,finalepisize,validvol,meanvol] = preprocessfmri_SA2(figuredir, ...
+[epis,finalepisize,validvol,meanvol,mparams] = preprocessfmri_SA2(figuredir, ...
   fmaps,fmapbrains,fmapsizes,fmapdeltate,fmapunwrap,fmapsmoothing, ...
   epis,mux,vox_dim,inPlaneMatrixSize,TR,sliceOrder,phaseDir,readOutTime,...
   epifmapasst,numepiignore,motionRef,motionCutoff,extratrans,targetres,sliceshiftband, ...
