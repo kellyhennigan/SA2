@@ -24,7 +24,10 @@
 
 %% define directories, files, etc.
 
-subj = '9';
+clear all
+close all
+
+subj = '11';
 
 p=getSA2Paths(subj);
 
@@ -38,12 +41,12 @@ figuredir = fullfile(p.func_proc,'figures');
 outDir = p.func_proc;
 
 % what NIFTI files should we interpret as EPI runs?
-epifilenames = {'run1_c2.nii.gz',...
-    'run2_c2.nii.gz',...
-    'run3_c2.nii.gz',...
-    'run4_c1.nii.gz',...
-    'run5_c1.nii.gz',...
-    'run6_c1.nii.gz'};% ***
+epifilenames = {'run1.nii.gz',...
+    'run2.nii.gz',...
+    'run3.nii.gz',...
+    'run4.nii.gz',...
+    'run5.nii.gz',...
+    'run6.nii.gz'};% ***
 
 func_ref_idx = [3 1]; % idx of the run and the vol of the run to align
 % other functional volumes and anatomical data to. NOTE: the vol idx refers
@@ -143,37 +146,37 @@ for r=1:nRuns
 end
 
 
-%% MOTION CORRECTION
+% %% MOTION CORRECTION
+% 
+% cd(outDir)
+% 
+% for r = 1:nRuns
+%     
+%     mc_command = ['3dvolreg -prefix rarun' num2str(r) ' -verbose -base ',...     
+%         ref_filename ' -dfile run' num2str(r) '_vr a' epifilenames{r}];
+%     
+%     system(mc_command)
+%         
+%     
+% end
+    
+    
+    
 
-cd(outDir)
-
-for r = 1:nRuns
-    
-    mc_command = ['3dvolreg -prefix rarun' num2str(r) ' -verbose -base ',...     
-        ref_filename ' -dfile run' num2str(r) '_vr a' epifilenames{r}];
-    
-    system(mc_command)
-        
-    
-end
-    
-    
-    
-
-   %% Coregister anatomy with reference functional volume
-   
-%     function coReg( studyDirectory, subjFolder, exp )
-    
-    disp('coregistration');
-    
-    VG = fullfile(outDir, ref_filename);
-
-    VG = spm_vol(VG);
-    
-    % % Use anatomy as source
-    
-    VF = fullfile(inDir,anat_filenames{1});
-     VF = spm_vol(strvcat(VF));
+%    %% Coregister anatomy with reference functional volume
+%    
+% %     function coReg( studyDirectory, subjFolder, exp )
+%     
+%     disp('coregistration');
+%     
+%     VG = fullfile(outDir, ref_filename);
+% 
+%     VG = spm_vol(VG);
+%     
+%     % % Use anatomy as source
+%     
+%     VF = fullfile(inDir,anat_filenames{1});
+%      VF = spm_vol(strvcat(VF));
      
      
 %     anatomyDir = sprintf('%s/%s/anat',studyDirectory, subjFolder);
@@ -185,36 +188,36 @@ end
 %     if ischar(VF) || iscellstr(VF), VF = spm_vol(strvcat(VF)); end;
     
     % % estimate coregistration
-    flags = struct('sep',[4 2],'cost_fun','nmi','fwhm',[7 7],...
-        'tol',[0.02 0.02 0.02 0.001 0.001 0.001 0.01 0.01 0.01 0.001 0.001 0.001]);
-    spm_coreg(VG,VF,flags);
-    
-    clear flags
-    P = char(VG.fname, VF.fname);
-    
-    % % Perform coregistration
-    flags = struct('interp', 1, 'mask', 0,'wrap',[0 0 0]',...
-        'prefix','r');
-    spm_reslice(P, flags);
-    
-    clear P VF VG
-    cd ..
-    %% move step avol* to /steps
- 
-    disp('--> moving avol* to to steps/');
-
-    for run = 1:exp.noRuns
-        runFolder = ['run_000' num2str(run)];
-        cd(runFolder);  % cd to the appropriate run folder
-        vols = dir('avol*');
-        mkdir steps;
-            for file = 1:length(vols)
-            movefile(vols(file).name, 'steps'); 
-            end
-	 cd ..
-    end
-    
-    
+%     flags = struct('sep',[4 2],'cost_fun','nmi','fwhm',[7 7],...
+%         'tol',[0.02 0.02 0.02 0.001 0.001 0.001 0.01 0.01 0.01 0.001 0.001 0.001]);
+%     spm_coreg(VG,VF,flags);
+%     
+%     clear flags
+%     P = char(VG.fname, VF.fname);
+%     
+%     % % Perform coregistration
+%     flags = struct('interp', 1, 'mask', 0,'wrap',[0 0 0]',...
+%         'prefix','r');
+%     spm_reslice(P, flags);
+%     
+%     clear P VF VG
+%     cd ..
+%     %% move step avol* to /steps
+%  
+%     disp('--> moving avol* to to steps/');
+% 
+%     for run = 1:exp.noRuns
+%         runFolder = ['run_000' num2str(run)];
+%         cd(runFolder);  % cd to the appropriate run folder
+%         vols = dir('avol*');
+%         mkdir steps;
+%             for file = 1:length(vols)
+%             movefile(vols(file).name, 'steps'); 
+%             end
+% 	 cd ..
+%     end
+%     
+%     
     
     
     
