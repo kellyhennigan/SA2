@@ -56,11 +56,10 @@ end
 %% now look for fieldmap runs 
 
 
-
 fm=dir('*B0.nii.gz');
-if numel(fm)>=1
-    disp(['detected ' num2str(numel(fm)) ' fieldmap files']);
-end
+    disp(['detected ' num2str(numel(fm)) ' files from 2 fieldmap scans:']);
+    
+    
 
 for i=1:numel(fm)
     j = regexp(fm(i).name,'\d*','Match');
@@ -73,8 +72,8 @@ fm=fm(idx); fm2=fm2(idx);
 % figure out when fieldmap scans were performed in relation to func scans
 for i=1:numel(fm)
     fm_scan_idx = find(fm_nums(i)<scan_nums,1,'first');
-    out_fm_strs{i} = ['fmap' fm_scan_idx '_B0.nii.gz'];
-    out_fm_strs2{i} = ['fmap' fm_scan_idx '.nii.gz'];
+    out_fm_strs{i} = ['fmap' num2str(fm_scan_idx) '_B0.nii.gz'];
+    out_fm_strs2{i} = ['fmap' num2str(fm_scan_idx) '.nii.gz'];
 end
 
 fprintf('\n these field maps scans detected (in order), to be renamed to the following: \n\n');
