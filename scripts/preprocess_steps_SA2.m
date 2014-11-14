@@ -40,7 +40,12 @@ outdir = p.func_proc;
 
 
 % what NIFTI files should we interpret as EPI runs?
-epifilenames = {'run1_c1.nii.gz','run2_c1.nii.gz'};% ***
+epifilenames = {'run1_c1.nii.gz',...
+    'run2_c1.nii.gz',...
+    'run3_c1.nii.gz',...
+    'run4_c2.nii.gz',...
+    'run5_c2.nii.gz',...
+    'run6_c2.nii.gz'};% ***
 
 
 % by default, we tend to use double format for computation.  but if memory is an issue,
@@ -92,7 +97,7 @@ motionCutoff = [];
 % if [], do nothing special (i.e. do not use a mask).
 mcMask = [];
 
-epiignoremcvol = [];
+epiignoremcvol = []; % ignore any volumes for mc? (default is no)
 
 
 
@@ -110,7 +115,7 @@ fmapsmoothing = [7.5 7.5 7.5];
 fmapMAGfiles= {'fmap1.nii.gz'};
 fmapB0files = {'fmap1_B0.nii.gz'};
 
-epifmapasst = [];
+epifmapasst = {1 1 1 2 2 2};
 
 %% fmri quality checks and figures for inspection
 
