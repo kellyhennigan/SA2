@@ -27,7 +27,7 @@
 clear all
 close all
 
-subj = '11';
+subj = '16';
 
 p=getSA2Paths(subj);
 
@@ -54,7 +54,7 @@ func_ref_idx = [3 1]; % idx of the run and the vol of the run to align
 ref_filename = 'mc_func_vol.nii';
 
 
-anat_filenames = {'t1.nii','t2.nii','pd.nii'}; % anatomical files to coregister w/functional data
+t1_filename = 't1.nii'; % anatomical files to coregister w/functional data
 
 
 nRuns = numel(epifilenames);
@@ -146,22 +146,48 @@ for r=1:nRuns
 end
 
 
-% %% MOTION CORRECTION
-% 
-% cd(outDir)
-% 
-% for r = 1:nRuns
-%     
-%     mc_command = ['3dvolreg -prefix rarun' num2str(r) ' -verbose -base ',...     
-%         ref_filename ' -dfile run' num2str(r) '_vr a' epifilenames{r}];
-%     
-%     system(mc_command)
-%         
-%     
-% end
+%% MOTION CORRECTION
+
+cd(outDir)
+
+for r = 1:nRuns
     
+    mc_command = ['3dvolreg -prefix rarun' num2str(r) ' -verbose -base ',...     
+        ref_filename ' -zpad 4 -dfile vr_run' num2str(r) ' a' epifilenames{r}];
     
+    system(mc_command)
+        
     
+end
+    
+
+%% Coregister t1 to functional data
+
+
+coreg_command = ['align_epi_anat.py -anat ../raw/t1.nii.gz -epi mc_func_vol.nii ',...
+    '-epi_base 0 -anat2epi -tshift off -partial_coverage -AddEdge'];
+system(coreg_command)
+
+movefile('t1.nii.gz_al_mat.aff12.1D','t12func_xform');
+movefile('t1.nii.gz_al_e2a_only_mat.aff12.1D','func2t1_xform')
+movefile('t1.nii.gz_al.nii.gz','c_t1.nii.gz');
+    
+
+
+%% Smooth data    
+
+for r = 1:nRuns
+    
+smooth_command = ['3dmerge -1blur_fwhm 3 -doall -prefix s' 
+
+
+
+
+
+
+
+
+
 
 %    %% Coregister anatomy with reference functional volume
 %    
@@ -218,6 +244,17 @@ end
 %     end
 %     
 %     
+
+
+% a) Slice timing correction
+% r) Realignment of functionals to first image
+% u) Realign & Unwrap (requires FieldMap steps first!see SPM manual not yet in here)
+% c) Coregistration of T1 to realigned functional mean
+% z) Segmentation of corregistered T1
+% w) Normalization of functionals onto EPI template using segmentations
+% s) Smoothing of functionals
+% v) Artrepair
+
     
     
     
