@@ -4,8 +4,13 @@
 clear all
 close all
 
+<<<<<<< HEAD
 subj = '15';
 cni_id = '8301'; % (first 4 digits of file names)
+=======
+subj = '27';
+cni_id = '8259'; % (first 4 digits of file names)
+>>>>>>> 2e11a847000a60847fd76db98d4f604995aa8b20
 
 
 p = getSA2Paths(subj);
@@ -35,7 +40,11 @@ f=f(idx); phys=phys(idx);  phys2=phys2(idx);
 
 % display found scans
 fprintf('\n functional runs detected (in order): \n\n')
+<<<<<<< HEAD
 for i=1:numel(phys)
+=======
+for i=1:6
+>>>>>>> 2e11a847000a60847fd76db98d4f604995aa8b20
     disp([f(i).name '  >  run' num2str(i) '.nii.gz']);
 end
 
@@ -45,7 +54,11 @@ c= input('\n\ncontinue (y/n)? ','s');
 if ~strcmpi(c,'y')
     error('stopped script based on user input')
 else
+<<<<<<< HEAD
     for i=1:numel(phys)
+=======
+    for i=1:6
+>>>>>>> 2e11a847000a60847fd76db98d4f604995aa8b20
         movefile(f(i).name,['run' num2str(i) '.nii.gz']);
         movefile(phys(i).name,['physio_run' num2str(i) '.tgz']);
         movefile(phys2(i).name,['physio_regs_run' num2str(i) '.csv.gz']);
