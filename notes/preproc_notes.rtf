@@ -1,4 +1,4 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf140
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \margl1440\margr1440\vieww12600\viewh7800\viewkind0
@@ -11,4 +11,26 @@ CNI processing wiki: http://cni.stanford.edu/wiki/General_data_processing_notes\
 Kendrick\'92s preprocessing fmri script info: http://cni.stanford.edu/wiki/Preprocessfmri\
 \
 Vista lab processing wiki: http://white.stanford.edu/newlm/index.php/Main_Page\
+\
+\
+\
+\'97\'97\'97\
+\
+put all raw files into subject/raw directory \
+\
+run matlab script \'91setupRawData\'92 to rename files appropriately \
+\
+run preproc_steps_SA2 script to: \
+	- drop first 6 volumes of each run\
+	- slice time correct \
+	- compute temporal SNR\
+	- undistort data based on fieldmaps\
+	- motion correct data \
+\
+\
+\
+\
+\
+\
+\
 }
