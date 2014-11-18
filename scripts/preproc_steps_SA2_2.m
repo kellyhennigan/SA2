@@ -8,6 +8,7 @@
 % 2) slice time correction
 % 3) motion correction
 % 4) fieldmap correction
+% 5) 
 
 % eventually, these first three steps should be done at the same time
 
@@ -27,20 +28,25 @@
 clear all
 close all
 
-subj = '16';
+subj = '18';
 
 p=getSA2Paths(subj);
+
 
 % what directory do the data live in?
 inDir = p.raw;
 
-% where should i save figures to?
-figuredir = fullfile(p.func_proc,'figures');
 
 % where should the preprocessed files be saved to?
 outDir = p.func_proc;
 
-% what NIFTI files should we interpret as EPI runs?
+
+
+% where should i save figures to?
+figureDir = fullfile(outDir,'figures');
+
+
+% % what NIFTI files should we interpret as EPI runs?
 epifilenames = {'run1.nii.gz',...
     'run2.nii.gz',...
     'run3.nii.gz',...
@@ -48,13 +54,18 @@ epifilenames = {'run1.nii.gz',...
     'run5.nii.gz',...
     'run6.nii.gz'};% ***
 
+% fmapMAGfilenames = {'fmap1.nii.gz','fmap4.nii.gz'};
+% fmapB0filenames = {'fmap1_B0.nii.gz','fmap4_B0.nii.gz'};
+
 func_ref_idx = [3 1]; % idx of the run and the vol of the run to align
 % other functional volumes and anatomical data to. NOTE: the vol idx refers
 % counts AFTER nVolsOmit have been discarded from the run. 
 ref_filename = 'mc_func_vol.nii';
 
+tlrcTempPath = '/Users/Kelly/afni';
 
-t1_filename = 't1.nii'; % anatomical files to coregister w/functional data
+
+t1_filename = 't1.nii.gz'; % anatomical files to coregister w/functional data
 
 
 nRuns = numel(epifilenames);
@@ -91,7 +102,7 @@ fprintf('loading EPI data...');
 for r=1:nRuns
     
     nii = readFileNifti(fullfile(inDir,epifilenames{r}));
-    nii.data = double(nii.data);
+%     nii.data = double(nii.data);
     vox_dim = nii.pixdim(1:3);
     TR = nii.pixdim(4);
     epi_dim = sizefull(nii.data,3);
@@ -104,7 +115,7 @@ for r=1:nRuns
     
     
     
-    %% drop the first few vols, save out the func vol to align anatomical data to
+    %% drop the first few vols
     
     if ~notDefined('nVolsOmit')
         fprintf(['dropping first ' num2str(nVolsOmit) ' volumes from the epi...']);
@@ -132,7 +143,8 @@ for r=1:nRuns
     writeFileNifti(nii);
     
     
-    %% save out a reference volume for coregistering anatomical data
+    %% SAVE A FUNC REF VOL for realignment (motion correction) 
+%     and for coregistration of anatomcal data
     
      if r==func_ref_idx(1)
         vol = nii;
@@ -141,9 +153,16 @@ for r=1:nRuns
         writeFileNifti(vol);
      end
     
-    clear nii
+     clear nii
+   
     
 end
+
+%% make VDM for fieldmap correction, do fieldmap correction 
+
+% pm_defs = [9.1, 11.372, 0, 19.1, -1, 1, 1]];
+% 
+% VDM=FieldMap_preprocess(indir,epi_dir,[9.1,11.372,0,pm_defs,sessname)
 
 
 %% MOTION CORRECTION
@@ -152,7 +171,7 @@ cd(outDir)
 
 for r = 1:nRuns
     
-    mc_command = ['3dvolreg -prefix rarun' num2str(r) ' -verbose -base ',...     
+    mc_command = ['afni 3dvolreg -prefix rarun' num2str(r) ' -verbose -base ',...     
         ref_filename ' -zpad 4 -dfile vr_run' num2str(r) ' a' epifilenames{r}];
     
     system(mc_command)
@@ -161,34 +180,101 @@ for r = 1:nRuns
 end
     
 
-%% Coregister t1 to functional data
-
-
-coreg_command = ['align_epi_anat.py -anat ../raw/t1.nii.gz -epi mc_func_vol.nii ',...
-    '-epi_base 0 -anat2epi -tshift off -partial_coverage -AddEdge'];
-system(coreg_command)
-
-movefile('t1.nii.gz_al_mat.aff12.1D','t12func_xform');
-movefile('t1.nii.gz_al_e2a_only_mat.aff12.1D','func2t1_xform')
-movefile('t1.nii.gz_al.nii.gz','c_t1.nii.gz');
-    
-
-
-%% Smooth data    
+%% SMOOTH 
 
 for r = 1:nRuns
+    sm_command = ['3dmerge -1blur_fwhm 3.2 -doall -prefix srarun' num2str(r) 'rarun' num2str(r) '+orig']; ];
+end
+
+
+%% COREGISTER T1 to functional data
+
+    coreg_command = ['align_epi_anat.py -anat ../raw/t1.nii.gz -epi mc_func_vol.nii ',...
+        '-epi_base 0 -anat2epi -tshift off -partial_coverage -AddEdge'];
+    system(coreg_command)
+
     
-smooth_command = ['3dmerge -1blur_fwhm 3 -doall -prefix s' 
+    % change file names 
+    movefile('t1.nii.gz_al_mat.aff12.1D','t12func_xform');
+    movefile('t1.nii.gz_al_e2a_only_mat.aff12.1D','func2t1_xform')
+    movefile('t1.nii.gz_al.nii.gz','c_t1.nii.gz');
+
+    
+    
+
+%% NORMALIZE DATA TO TLRC SPACE
+
+% normalize func-aligned t1 to the tlrc template
+t12tlrc_cmd = ['@auto_tlrc -base ' tlrcTempPath '-input c_t1.nii.gz -no_ss'];
+system(t12tlrc_cmd);
+
+  % change file names 
+% movefile('t1.nii.gz_al_mat.aff12.1D','t12func_xform');
+%     movefile('t1.nii.gz_al_e2a_only_mat.aff12.1D','func2t1_xform')
+%     movefile('t1.nii.gz_al.nii.gz','c_t1.nii.gz');
+
+    
+% transform mc_func_vol to tlrc space     
+func2tlrc_cmd = ['@auto_tlrc -apar c_t1_at.nii -input mc_func_vol.nii -dxyz 1.6'];
+system(func2tlrc_cmd)
+
+% transform all func runs to tlrc space
+for r=1:nRuns
+    func2tlrc_cmd = ['@auto_tlrc -apar c_t1_at.nii -input srarun' num2str(r) '+orig -dxyz 1.6'];
+    system(func2tlrc_cmd)
+end
+
+
+%% MAKE A BINARY MASK 
+
+% make a binary mask for each run
+for r=1:nRuns
+    mask_cmd = ['3dAutomask -prefix mask' num2str(r) ' srarun' num2str(r) '_at.nii'];
+    system(mask_cmd)
+end
+
+% take the mean of all run masks 
+mask_cmd = ['3dMean -datum float -prefix mean_mask mask*'];
+system(mask_cmd);
+
+% create one mask from the mean including all voxels w/a value of .2 or
+% higher (so present in masks from at least 2 runs)
+mask_cmd = ['3dcalc -datum byte -prefix s' subj 'mask -a mean_mask+tlrc -expr ''step(a-0.2)'''];
+system(mask_cmd);
+
+% delte all mask files except main subject one
+delete('mask*','mean_mask*');
+
+
+%% SCALE EACH FUNC RUN 
+
+for r=1:nRuns
+    
+    % get the mean of each run
+    scale_cmd = ['3dTstat -mean -prefix mean srarun' num2str(r) '+tlrc'];
+    system(scale_cmd)
+    
+    % scale each run by dividing by the run mean then x 100
+    scale_cmd = ['3dcalc -a srarun' num2str(r) '+tlrc -b mean+tlrc -expr ''(a/b)*100'' -prefix srarun' num2str(r) '_scaled'];
+    system(scale_cmd)
+    
+    % delete the mean file for each run
+    delete('mean+*');
+    
+end
+
+
+%% 
+
+
+
+% calculate a group mask
 
 
 
 
 
-
-
-
-
-
+%% 
 %    %% Coregister anatomy with reference functional volume
 %    
 % %     function coReg( studyDirectory, subjFolder, exp )

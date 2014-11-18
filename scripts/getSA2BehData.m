@@ -32,6 +32,9 @@ rt = d{7};
 outcome = d{8};
 outcome_onset = d{9};
 
+% recode no-response trials w/NaN for cue choice and outcome
+outcome = double(outcome); outcome(cue_choice==0)=nan;
+cue_choice = double(cue_choice); cue_choice(cue_choice==0)=nan;
 
    
             

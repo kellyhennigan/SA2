@@ -21,7 +21,8 @@ if strcmp(cName,'psy-jal-ml.stanford.edu') % lab desktop
 elseif strcmp(cName,'mt-tamalpais')        % mt-tam server
     baseDir = '/home/kelly/SA2';
 else                                       % assume it's laptop Pluck
-    baseDir = '/Users/Kelly/SA2';
+%     baseDir = '/Users/Kelly/SA2';
+    baseDir = '/Volumes/Mac OS X Install ESD/SA2';
 end
 
 
@@ -40,7 +41,7 @@ if ~notDefined('subject')
     p.raw         = fullfile(p.subj, 'raw/');
     p.regs        = fullfile(p.subj, 'regs/');
     p.ROIs        = fullfile(p.subj, 'ROIs/');
-    p.stimtimes   = fullfile(p.subj, 'stimtimes/');
+    p.results        = fullfile(p.subj, 'results/');
     p.t1          = fullfile(p.subj, 't1/');
 end
     

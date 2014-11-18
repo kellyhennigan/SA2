@@ -4,13 +4,9 @@
 clear all
 close all
 
-<<<<<<< HEAD
-subj = '15';
-cni_id = '8301'; % (first 4 digits of file names)
-=======
-subj = '27';
-cni_id = '8259'; % (first 4 digits of file names)
->>>>>>> 2e11a847000a60847fd76db98d4f604995aa8b20
+
+subj = '29';
+cni_id = '8285'; % (first 4 digits of file names)
 
 
 p = getSA2Paths(subj);
@@ -40,11 +36,7 @@ f=f(idx); phys=phys(idx);  phys2=phys2(idx);
 
 % display found scans
 fprintf('\n functional runs detected (in order): \n\n')
-<<<<<<< HEAD
 for i=1:numel(phys)
-=======
-for i=1:6
->>>>>>> 2e11a847000a60847fd76db98d4f604995aa8b20
     disp([f(i).name '  >  run' num2str(i) '.nii.gz']);
 end
 
@@ -54,11 +46,7 @@ c= input('\n\ncontinue (y/n)? ','s');
 if ~strcmpi(c,'y')
     error('stopped script based on user input')
 else
-<<<<<<< HEAD
     for i=1:numel(phys)
-=======
-    for i=1:6
->>>>>>> 2e11a847000a60847fd76db98d4f604995aa8b20
         movefile(f(i).name,['run' num2str(i) '.nii.gz']);
         movefile(phys(i).name,['physio_run' num2str(i) '.tgz']);
         movefile(phys2(i).name,['physio_regs_run' num2str(i) '.csv.gz']);
@@ -86,8 +74,8 @@ fm=fm(idx); fm2=fm2(idx);
 % figure out when fieldmap scans were performed in relation to func scans
 for i=1:numel(fm)
     fm_scan_idx = find(fm_nums(i)<scan_nums,1,'first');
-    out_fm_strs{i} = ['fmap' fm_scan_idx '_B0.nii.gz'];
-    out_fm_strs2{i} = ['fmap' fm_scan_idx '.nii.gz'];
+    out_fm_strs{i} = ['fmap' num2str(fm_scan_idx) '_B0.nii.gz'];
+    out_fm_strs2{i} = ['fmap' num2str(fm_scan_idx) '.nii.gz'];
 end
 
 fprintf('\n these field maps scans detected (in order), to be renamed to the following: \n\n');

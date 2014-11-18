@@ -64,9 +64,8 @@ for i=1:numel(subjs)
         
         [~,~,trial_cond,~,~,trial_choice,~,trial_outcome,~] = getSA2BehData(fullfile(p.behavior,f(j).name));
         
-        choices(:,end+1) = trial_choice(trial_cond==cond);
-        choices(choices==0)=nan;  % recode no-response trials to NaN
-        outcomes(:,end+1) = trial_outcome(trial_cond==cond);
+        choices(:,end+1) = trial_choice(trial_cond==cond); % get choices for gain or loss trials
+        outcomes(:,end+1) = trial_outcome(trial_cond==cond); % get outcomes for gain or loss trials
         
                     
     end

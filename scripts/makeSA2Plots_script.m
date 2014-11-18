@@ -17,7 +17,7 @@ subStr = 'all';
 subjs = getSA2Subjects('all');
 
 
-savePlots = 0;
+savePlots = 1;
 saveDir = ['/Users/Kelly/SA2/figures']
 
 
@@ -26,7 +26,8 @@ fSize = 16;
 
 Conds=[1,2]; % gain and loss
 
-cols=getSA2Colors;
+cols=getSA2Colors; 
+cols = [cols(2,:);cols(1,:);cols(3,:);cols(4,:)];
 
 %%  plot of observed and modeled choices
 
@@ -35,12 +36,13 @@ set(gca,'fontName',font,'fontSize',fSize)
 set(gca,'box','off');
 set(gcf,'Color','w','InvertHardCopy','off','PaperPositionMode','auto');
 
+for cc=1:2
 
 for cond = 1:numel(Conds)      % gains and losses
     
     p = getRLparams(subStr,cond); % best parameter fits
     
-    [choices,outcomes]=getSubjChoicesOutcomes(subjs,cond); % get trial choices and outcomes
+    [choices,outcomes]=getSubjChoicesOutcomes(subjs,cond,cc); % get trial choices and outcomes
     
     [nLL(cond),~,Pc1] = fitQLearningMod(p, choices, outcomes); % get model Pc1
     
@@ -66,6 +68,7 @@ ylabel('Observed and Modeled Choices (%)')
 if savePlots
     outFPath = fullfile(saveDir,'Pchoices.pdf');
     saveas(gcf,outFPath,'pdf');
+     saveas(gcf,outFPath,'epsc');
 end
 
 

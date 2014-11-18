@@ -1,4 +1,4 @@
-function [subjs,CB] = getSA2Subjects(analysis)
+function [subjs,CB] = getSA2Subjects(subgroup)
 
 % notes: 
 % last 2 scan runs from subj 28 weren't saved 
@@ -12,24 +12,34 @@ all_subjs = {'9','10','11','12','14','15','16','17','18','19','20','21',...
 
 
 % this only includes subjects that got >55% of gain & loss trials 'correct'
+% subjects with good behavior (excluding subjects 21 & 29 bc they didn't learn but
+% including subjects that may be excluded bc of bad MR data
 RL_subjs = {'10','11','14','15','17','18','19',...
     '23','24','25','26','27','28'};
 
 
-% subjects with good behavior (excluding subjects 21 & 29 bc they didn't learn but
-% including subjects that may be excluded bc of bad MR data
-fmri_subjs = {'9','10','11','12','14','15','16','17','18','19','20','21',...
+% only subjects for which we have a full functional data set 
+fmri_subjs = {'9','10','11','12','14','15','16','18','19','20','21',...
     '23','24','25','26','27','29'};
 
 
-if notDefined('analysis')
-    analysis = 'all';
+% only subjects for which we have a full functional data set 
+best_subjs = {'10','11','14','15','18','19','23','24','25','26','27'};
+
+
+
+if notDefined('subgroup')
+    subgroup = 'all';
 end
 
-if strcmpi(analysis,'RL')
+if strcmpi(subgroup,'RL')
     subjs = RL_subjs;
-elseif strcmp(analysis,'fmri')
+elseif strcmp(subgroup,'fmri')
     subjs = fmri_subjs;
+elseif strcmp(subgroup,'best')
+    subjs = best_subjs;
+elseif any(strcmp(num2str(subgroup),all_subjs)) % allow input of a subj num to get the cb code
+    subjs = all_subjs(find(strcmpi(num2str(subgroup),all_subjs))); 
 else
   subjs = all_subjs;
 end
