@@ -4,6 +4,28 @@ function [subjs,CB] = getSA2Subjects(subgroup)
 % last 2 scan runs from subj 28 weren't saved 
 % subjects 21 and 29 didn't learn
 
+% 9 - didn't get >55% correct for gains and/or losses
+% 10 - good; scaling data now, mask is made
+% 11 - good (on mt-tam); scaling data now 
+% 12 - didn't get >55% correct for gains and/or losses
+% 14 - good (on mt-tam)
+% 15 - good (on mt-tam)
+% 16 - didn't get >55% correct for gains and/or losses; fell asleep a
+       % little, crazy head movement
+% 17 - fmri data missing from later runs
+% 18 - good, on xhd
+% 19 - good, on xhd
+% 20 - didn't get >55% correct for gains and/or losses
+% 21 - didn't get >55% correct for gains and/or losses
+% 23 - ready for glm fit
+% 24 - good, on xhd almost ready for glm, just needs gzip on func data niis
+% 25 - good, on xhd, shuold be good in some minutes 
+% 26 - preprocessing messed up for runs 3-5; on mt-tam
+% 27 - good, on mt-tam
+% 28 - fmri data missing from later runs
+% 29 - didn't learn but processing anyway 
+% 
+
 
 % all subjects for which there is a full set of behavioral data
 all_subjs = {'9','10','11','12','14','15','16','17','18','19','20','21',...
