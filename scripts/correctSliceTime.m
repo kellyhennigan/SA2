@@ -8,8 +8,10 @@ if ~notDefined('mux')
     y = repmat(y,1,mux);
 end
 
+scaled_y = (1-y)/max(y); % I think this makes it so that the slice timing 
+% is corrected to the first slice time 
 
-slice_time_corrected_epi = sincshift(epi,repmat(reshape((1-y)/max(y),1,1,[]),[size(epi,1) size(epi,2)]),4);
+slice_time_corrected_epi = sincshift(epi,repmat(reshape(scaled_y,1,1,[]),[size(epi,1) size(epi,2)]),4);
 
 
 

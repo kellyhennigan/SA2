@@ -157,6 +157,8 @@ fprintf('done (loading EPI data).\n');
 
 reportmemoryandtime;
 
+% note: check out kendrick's undistortvolumes script to go the motion
+% correction and undistortion correction in one step (maybe)
 
 %% drop the first few vols
 

@@ -1,4 +1,4 @@
-function reg_tr = glm_fmri_makeRegs_SA2(subj, stim, run)
+function reg_tr = glm_fmri_createRegs_SA2(subj, stim, irf, run, nVols, TR)
 %
 % creates a separate regressor for each trial
 %
@@ -15,8 +15,11 @@ function reg_tr = glm_fmri_makeRegs_SA2(subj, stim, run)
             % loss0 - nothing outcomes for loss trials
             % contextevent - neutral or shock cue (base or stress context)
             % shock - shock delivery
-
+% irf - can be either 'can' for spm's canonical hrf or 'fir' for using a
+%       finite response function (like AFNI's tent function)
 % run - integers specifying which scan runs to include (e.g., [1:6])
+% nVols - number of volumes acquired in the scan run
+% TR - repetition time of each acquired volume
 %
 % OUTPUTS:,
 % run_regs - regressor time series in units of TRs from the runs
@@ -26,29 +29,22 @@ function reg_tr = glm_fmri_makeRegs_SA2(subj, stim, run)
 % NOTE: User should edit first section below to specify desired irf
 % parameters, etc.
 %
-% Kelly, August 2012
+% Kelly, 2014
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %
 
 % if runs argument not given, process all 3 runs
-if notDefined('run')
-    run = input('which scan run number? (most likely 1-6)?');
+if notDefined('irf')
+    irf = 'can'; % spm's canonical hrf function
 end
 
-
-TR = 1.5; % repetition time
-
-nVols = 326;
-
-irf = 'spm_hrf'; % current options are 'spm_hrf', 'tent', or 'per_trial'
-% this will be used as a suffix for the out files
 
 % irf parameters
 switch irf
     
-    case {'spm_hrf'}
+    case 'can'  % spm's canonical hrf function 
         
         sample_rate = 0.1;             % sample rate in seconds (upsampled)
         params = [6 16 1 1 6 0 32];         % set parameters for hrf; defaults are: P = [6 16 1 1 6 0 32];
@@ -61,11 +57,11 @@ switch irf
         % the temporal derivative
         
         
-    case 'tent'
+    case 'fir'  % finite impulse response funtion (like afni's tent function)
         
-        b = 0;  %  beginning of time window to model after stim onset
+        b = -2;  %  beginning of time window to model after stim onset
         c = 10;  % end of time window to model after stim onset
-        n = 6;   % number of tent functions to model for each event of interest
+        n = 7;   % number of tent functions to model for each event of interest
         params = [b c n];
         % note: timegap btwn regressors = (c-b)./(n-1); this value should be >= TR
         
@@ -85,7 +81,7 @@ onsets = getSA2StimOnsets(subj,stim,run); % get stim onset times
     
     switch irf
         
-        case 'spm_hrf'
+        case 'can'
             
             onsets = round(onsets ./ sample_rate); % convert to sample_rate units
             
@@ -94,15 +90,18 @@ onsets = getSA2StimOnsets(subj,stim,run); % get stim onset times
             
             reg_ts = conv(t, hrf); % convolve upsampled time series with hrf
             
-            reg_ts = (reg_ts./max(reg_ts));    % scaled to peak at 1
+            if max(reg_ts)>0  % only scale if there are values > 0 
+                reg_ts = (reg_ts./max(reg_ts));    % scaled to peak at 1
+            end
             
             reg_tr = reg_ts(1:TR/sample_rate:end); % convert time series into units of TRs
             reg_tr = reg_tr(1:nVols); % convolution makes the reg ts longer than nVols
             
             
-        case 'tent'
+        case 'fir'
             
-            reg_tr = makeFIRRegs(trigs, onsets, params);
+            t = 0:TR:nVols*TR-1; % define time series
+            reg_tr = createFIRRegs(t, onsets, params);
             
     end
     
