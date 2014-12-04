@@ -8,6 +8,7 @@
 clear all
 close all
 
+subj = '23';
 
 irf = 'can';
 irf_param_str = '';
@@ -24,16 +25,17 @@ matFName = ['glm_' irf '_' irf_param_str 'runALL.mat'];
 %     'ssrarun6.nii.gz'};
 
 funcFiles = {'ssrarun123_sl1_19.nii.gz',...
-    'ssrarun456_sl1_19.nii.gz',...
     'ssrarun123_sl20_38.nii.gz',...
+    'ssrarun123_sl39_57.nii.gz'};
+
+funcFiles2 = {'ssrarun456_sl1_19.nii.gz',...
     'ssrarun456_sl20_38.nii.gz',...
-    'ssrarun123_sl39_57.nii.gz',...
     'ssrarun456_sl39_57.nii.gz'};
 
 
 %
 maskFile = 'func_mask.nii.gz';
-
+sl_idx = [1:19;20:38;39:57];
 
 stims = {'gain+1_base','gain+PE_base','gain0_base','gain-PE_base',...
     'loss-1_base','loss-PE_base','loss0_base','loss+PE_base',...
@@ -42,158 +44,80 @@ stims = {'gain+1_base','gain+PE_base','gain0_base','gain-PE_base',...
     'contextevent_base','contextevent_stress','shock',...
     'cuepair1','cuepair2'};
 
-outDir = ['/Volumes/Mac OS X Install ESD/SA2/results'];
+outDir = ['/Volumes/Mac OS X Install ESD/SA2/data/' subj '/results'];
 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% subject loop
+%% do it
 
 
-% for s =1:numel(subjs)
-
-subj = '23';
-% subj = subjs{s};
 
 fprintf('\n\nfitting model for subject %s ...\n', subj);
 
 
 expPaths = getSA2Paths(subj);
 
-cd(expPaths.func_proc)
-
-
-% get mask
-mask=readFileNifti(maskFile);
-mask.data=double(mask.data);
 
 % get design matrix
 matPath = fullfile(expPaths.design_mats,matFName);
 load(matPath);
 
 
-% get data
+% get mask
 cd(expPaths.func_proc)
-
-% func = readFileNifti(funcFiles{1});
-% data = func.data;
-% for r=2:numel(funcFiles)
-%     nextNii = readFileNifti(funcFiles{r});
-%     data = cat(4,data,nextNii.data);
-%     clear nextNii
-% end
-
-func1 = readFileNifti(funcFiles{1});
-func2 = readFileNifti(funcFiles{2});
-data = cat(4,func1.data,func2.data);
-
-stats1 = glm_fmri_fit_vol(data,X,regIdx,mask.data(:,:,1:19)); % fit model to data
+mask=readFileNifti(maskFile);
+mask.data=single(mask.data);
 
 
-
-func1 = readFileNifti(funcFiles{3});
-func2 = readFileNifti(funcFiles{4});
-data = cat(4,func1.data,func2.data);
-
-stats2 = glm_fmri_fit_vol(data,X,regIdx,mask.data(:,:,20:38)); % fit model to data
-
-
-func1 = readFileNifti(funcFiles{5});
-func2 = readFileNifti(funcFiles{6});
-data = cat(4,func1.data,func2.data);
-
-stats3 = glm_fmri_fit_vol(data,X,regIdx,mask.data(:,:,39:57)); % fit model to data
-
-
-
-% save out model fits 
-cd(outDir);
-
-B = 
-tB =
-Rsq =
-
-out_descrip = ['glm file(s): ' matNames{1:3}];
-
-outName = [subj '_' context '_Rsq'];
-outNii = makeGlmNifti(mask,outName,out_descrip,Rsq);
-writeFileNifti(outNii);
-
-
-for c = 1:length(stims)
+% get data
+for d = 1:numel(funcFiles)
     
-    outName = [subj '_' stims{c} '_' context '_betas'];
-    outNii = makeGlmNifti(mask,outName,out_descrip,B(:,:,:,[strmatch(stims{c},regLabels)]));
-    writeFileNifti(outNii);
-    
-    outName = [subj '_' stims{c} '_' context '_T'];
-    outNii = makeGlmNifti(mask,outName,out_descrip,B(:,:,:,[strmatch(stims{c},regLabels)]));
-    writeFileNifti(outNii);
-    
-end
-
-clear X stats func
-
-%% runs 4-6
-
-if cb==1
-    context = 'stress';
-else
-    context = 'base';
-end
-
-for r=4:6
-    
-    % get design matrix
-    matFile = dir([expPaths.design_mats matNames{r}]);
-    if numel(matFile) ~=1
-        error(['found ' num2str(numel(matFile)) ' matFiles for run ' num2str(r)])
-    end
-    matPath = fullfile(expPaths.design_mats,matFile(1).name);
-    load(matPath);
-    
-    
-    % get data
     cd(expPaths.func_proc)
-    func = readFileNifti(funcFiles{r});
+
+    func1 = readFileNifti(funcFiles{d});
+    func2 = readFileNifti(funcFiles2{d});
+    
+    data = cat(4,func1.data,func2.data);
     
     
     % fit model to data
-    stats(r-3) = glm_fmri_fit_vol(func.data,X,regIdx,mask.data);
+    stats = glm_fmri_fit_vol(data,X,regIdx,mask.data(:,:,sl_idx(d,:))); % fit model to data
+    
+    
+    % save out model fits
+    cd(outDir);
+    
+    % get a template mask for out files 
+    out_mask = mask; out_mask.data=out_mask.data(:,:,sl_idx(d,:));
+      
+    out_descrip = ['glm file(s): ' matFName];
+    sl_str = [num2str(sl_idx(d,1)) '-' num2str(sl_idx(d,end))];
+  
+    
+    outName = ['Rsq_' sl_str];
+    outNii = makeGlmNifti(out_mask,outName,out_descrip,stats.Rsq);
+    writeFileNifti(outNii);
+    
+    outName = ['F_' sl_str];
+    outNii = makeGlmNifti(out_mask,outName,out_descrip,stats.Fstat);
+    writeFileNifti(outNii);
+    
+    outName = ['B_' sl_str];
+    outNii = makeGlmNifti(out_mask,outName,out_descrip,stats.B(:,:,:,regIdx~=0));
+    writeFileNifti(outNii);
+    
+    outName = ['tB_' sl_str];
+    outNii = makeGlmNifti(out_mask,outName,out_descrip,stats.tB(:,:,:,regIdx~=0));
+    writeFileNifti(outNii);
+    
+    clear func1 func2 data stats outNii outName
     
 end
 
-B = cat(5,stats(1).B,stats(2).B,stats(3).B); B = mean(B,5);
-tB = cat(5,stats(1).tB,stats(2).tB,stats(3).tB); tB = mean(tB,5);
-Rsq = cat(4,stats(1).Rsq,stats(2).Rsq,stats(3).Rsq); Rsq = mean(Rsq,4);
-
-cd(outDir);
-
-out_descrip = ['glm file(s): ' matNames{4:6}];
-
-outName = [subj '_' context '_Rsq'];
-outNii = makeGlmNifti(mask,outName,out_descrip,Rsq);
-writeFileNifti(outNii);
+fprintf(['\n\nfinished subject ', subj,'\n']);
 
 
-for c = 1:length(stims)
-    
-    outName = [subj '_' stims{c} '_' context '_betas'];
-    outNii = makeGlmNifti(mask,outName,out_descrip,B(:,:,:,[strmatch(stims{c},regLabels)]));
-    writeFileNifti(outNii);
-    
-    outName = [subj '_' stims{c} '_' context '_T'];
-    outNii = makeGlmNifti(mask,outName,out_descrip,B(:,:,:,[strmatch(stims{c},regLabels)]));
-    writeFileNifti(outNii);
-    
-end
 
-
-clear expPaths func X
-
-fprintf(['\n\nfinished subject ', subject,'\n']);
-
-
-% end % subjects
