@@ -1,4 +1,4 @@
-% save motionRegs script 
+% save motionRegs script
 
 % script to load afni motion estimates text file (estimated using 3dvolreg)
 % and save out regressors to include in glm in subject's 'reg' directory
@@ -18,25 +18,31 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-subj = '29';
-
+subjects = getSA2Subjects();
 runs = 1:6;
 
-nVols = 326; 
+nVols = 326;
 
-%% 
-expPaths = getSA2Paths(subj);
 
-cd(expPaths.func_proc);
-
-mRegs = [];
-
-for r=runs
-    mot = dlmread(['vr_run' num2str(r) '.1D']);
-    mRegs(end+1:nVols+end,end+1:end+6) = mot(:,2:7);
+for i=1:19
+    subj = subjects{i};
+    
+    % subj = '29';
+    
+    
+    %%
+    expPaths = getSA2Paths(subj);
+    
+    cd(expPaths.func_proc);
+    
+    mRegs = [];
+    
+    for r=runs
+        mot = dlmread(['vr_run' num2str(r) '.1D']);
+        mRegs(end+1:nVols+end,end+1:end+6) = mot(:,1:6);
+    end
+    
+    cd(expPaths.regs)
+    dlmwrite('motion_runALL',mRegs);
+    
 end
-
-cd(expPaths.regs)
-dlmwrite('motion_runALL',mRegs);
-
-

@@ -58,7 +58,7 @@ for subject in subjects:
 	
 	
 	
-	###### normalize cal, func_reference volumes
+	###### normalize cal, func_reference volume
 	cmd = '@auto_tlrc -apar t1+tlrc. -input cal_ns_al+orig. -dxyz 1.6'
 	os.system(cmd)
 	cmd = '@auto_tlrc -apar t1+tlrc. -input func_ref_ns+orig. -dxyz 1.6'
@@ -71,7 +71,10 @@ for subject in subjects:
 	os.system(cmd)
 	
 	
-	###### finally, normalize functional data
+	###### finally, normalize functional data and functional mask
+	cmd = '@auto_tlrc -apar t1+tlrc. -input func_mask+orig. dxyz 1.6'
+	os.system(cmd)
+	
 	cmd = '@auto_tlrc -apar t1+tlrc. -input pp_ALL_bet+orig. dxyz 1.6'
 	os.system(cmd)
 	

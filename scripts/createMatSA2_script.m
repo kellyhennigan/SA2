@@ -56,7 +56,7 @@ end
 
 
 % subject loop
-for s=9:numel(subjs)
+for s=1:numel(subjs)
 
 % s=13
     
