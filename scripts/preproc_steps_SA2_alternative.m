@@ -28,7 +28,7 @@
 clear all
 close all
 
-subj = '18';
+subj = '23';
 
 p=getSA2Paths(subj);
 
@@ -54,13 +54,11 @@ epifilenames = {'run1.nii.gz',...
     'run5.nii.gz',...
     'run6.nii.gz'};% ***
 
-% fmapMAGfilenames = {'fmap1.nii.gz','fmap4.nii.gz'};
-% fmapB0filenames = {'fmap1_B0.nii.gz','fmap4_B0.nii.gz'};
+fmapMAGFilenames = fullfile(inDir,'fmaps','fmap1_v1.nii'); % magnitude data
 
-func_ref_idx = [3 1]; % idx of the run and the vol of the run to align
-% other functional volumes and anatomical data to. NOTE: the vol idx refers
-% counts AFTER nVolsOmit have been discarded from the run. 
-ref_filename = 'mc_func_vol.nii';
+fmapB0Filenames = fullfile(inDir,'fmaps','fmap1_B0.nii'); % phase data
+
+funcRefFilenames = fullfile(inDir,'func_ref_vol.nii');
 
 tlrcTempPath = '/Users/Kelly/afni';
 
@@ -102,7 +100,6 @@ fprintf('loading EPI data...');
 for r=1:nRuns
     
     nii = readFileNifti(fullfile(inDir,epifilenames{r}));
-%     nii.data = double(nii.data);
     vox_dim = nii.pixdim(1:3);
     TR = nii.pixdim(4);
     epi_dim = sizefull(nii.data,3);
@@ -139,32 +136,35 @@ for r=1:nRuns
     end
     
     
-    nii.fname = fullfile(outDir,['a' epifilenames{r}]);
-    writeFileNifti(nii);
     
-    
-    %% SAVE A FUNC REF VOL for realignment (motion correction) 
-%     and for coregistration of anatomcal data
-    
-     if r==func_ref_idx(1)
-        vol = nii;
-        vol.fname = fullfile(outDir,ref_filename);
-        vol.data = vol.data(:,:,:,func_ref_idx(2));
-        writeFileNifti(vol);
-     end
-    
-     clear nii
-   
+      
     
 end
 
 %% make VDM for fieldmap correction, do fieldmap correction 
 
-% pm_defs = [9.1, 11.372, 0, 19.1, -1, 1, 1]];
-% 
-% VDM=FieldMap_preprocess(indir,epi_dir,[9.1,11.372,0,pm_defs,sessname)
 
+te1 = 9.1; % te1 - short echo time (in ms)
+te2= 11.372; % te2 - long echo time (in ms)
+epifm = 0; % epifm - epi-based fieldmap - yes or no (1/0)
+tert = 25.998; % tert - total echo readout time (in ms)
+kdir = -1; % kdir - blip direction (1/-1)
+mask = 1; % mask ? do brain segmentation to mask field map (1/0)
+match = 1; % match ? match vdm file to first EPI in run (1/0). 
+writeunwarped = 1; % write out unwarped epi or not
+pm_defs = [te1 te2 epifm tert kdir mask match writeunwarped];
+VDM = FieldMap_preprocess_SA2(fmapB0Filenames,fmapMAGFilenames,funcRefFilenames, pm_defs ); 
 
+% this saves out the following files: 
+%   scfmap1_B0.nii - scaled phase fieldmap (in radians)
+%   bmaskfmap1_v1 - brain mask
+%   fpm_scfmap1_B0.nii - unwrapped field map (in Hz?)
+%   mfmap1_v1.nii - not sure...
+%   vdm5_scfmap1_B0 - voxel displacement map
+%   ufunc_ref_vol.nii - unwarpped epi reference volume 
+%   wfmag_func_ref_vol.nii - not sure 
+
+% ... quoi d'autre? 
 %% MOTION CORRECTION
 
 cd(outDir)
@@ -175,7 +175,6 @@ for r = 1:nRuns
         ref_filename ' -zpad 4 -dfile vr_run' num2str(r) ' a' epifilenames{r}];
     
     system(mc_command)
-        
     
 end
     
@@ -189,7 +188,7 @@ end
 
 %% COREGISTER T1 to functional data
 
-    coreg_command = ['align_epi_anat.py -anat ../raw/t1.nii.gz -epi mc_func_vol.nii ',...
+    coreg_command = ['align_epi_anat.py -anat ../raw/t1_ns.nii.gz -epi mc_func_vol.nii ',...
         '-epi_base 0 -anat2epi -tshift off -partial_coverage -AddEdge'];
     system(coreg_command)
 

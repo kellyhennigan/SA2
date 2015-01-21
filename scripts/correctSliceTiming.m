@@ -1,5 +1,5 @@
 % slice time correction
-function slice_time_corrected_epi = correctSliceTime(epi,episliceorder,mux)
+function slice_time_corrected_epi = correctSliceTiming(epi,episliceorder,mux)
 
 
 y = calcposition(episliceorder,1:max(episliceorder));

@@ -22,7 +22,8 @@ elseif strcmp(cName,'mt-tamalpais')        % mt-tam server
     baseDir = '/home/kelly/SA2';
 else                                       % assume it's laptop Pluck
 %     baseDir = '/Users/Kelly/SA2';
-    baseDir = '/Volumes/Mac OS X Install ESD/SA2';
+%     baseDir = '/Volumes/Mac OS X Install ESD/SA2';
+   baseDir = '/Volumes/blackbox/SA2';
 end
 
 
@@ -37,6 +38,7 @@ if ~notDefined('subject')
     p.subj = fullfile(p.data, subject);  % subject directory
     p.behavior    = fullfile(p.subj, 'behavior/');
     p.design_mats = fullfile(p.subj, 'design_mats/');
+    p.fmap_proc       = fullfile(p.subj, 'fmap_proc/');
     p.func_proc   = fullfile(p.subj, 'func_proc/');
     p.raw         = fullfile(p.subj, 'raw/');
     p.regs        = fullfile(p.subj, 'regs/');

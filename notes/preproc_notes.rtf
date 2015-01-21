@@ -1,74 +1,128 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf140
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 Courier;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
-\margl1440\margr1440\vieww12600\viewh7800\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 
-\f0\fs24 \cf0 SA2 preprocessing notes\
-\
-CNI processing wiki: http://cni.stanford.edu/wiki/General_data_processing_notes\
-\
-Kendrick\'92s preprocessing fmri script info: http://cni.stanford.edu/wiki/Preprocessfmri\
-\
-Vista lab processing wiki: http://white.stanford.edu/newlm/index.php/Main_Page\
-\
-\
-\
-\'97\'97\'97\
-\
-put all raw files into subject/raw directory \
-\
-run matlab script \'91setupRawData\'92 to rename files appropriately \
-\
-run preproc_steps_SA2 script to: \
-	- drop first 6 volumes of each run\
-	- slice time correct \
-	- motion correct \
-	- smooth data \
-	- coreg anat and func\
-	- normalize t1 to tlrc\
-	- normalize func to tlrc\
-\
-\
-\'97\'97\'97\'97\
-\
-notes for the future: \
-\
-for Fieldmap correction: \
-\
-put fieldmap params in: pm_defaults_SA2.m file in SA2/scripts folder \
-\
-check out spm manual and: \
-\
-Fieldmap_preprocess.m\
-fieldmaps.m\
-\
-\
-for regs: \
-\
-- make separate regs for cue pairs based on R/L presentation \
-\
-\'97\'97\'97\'97\'97\'97\'97\'97\
-\
-\
-3dvolreg\
-\
-\pard\pardeftab720
+SA2 preprocessing notes
 
-\f1 \cf2 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 \'a0n\'a0\'a0\'a0\'a0\'a0=\'a0sub-brick\'a0index\
-\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0roll\'a0\'a0=\'a0rotation\'a0about\'a0the\'a0I-S\'a0axis\'a0\}\
-\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0pitch\'a0=\'a0rotation\'a0about\'a0the\'a0R-L\'a0axis\'a0\}\'a0degrees\'a0CCW\
-\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0yaw\'a0\'a0\'a0=\'a0rotation\'a0about\'a0the\'a0A-P\'a0axis\'a0\}\
-\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0dS\'a0\'a0=\'a0displacement\'a0in\'a0the\'a0Superior\'a0direction\'a0\'a0\}\
-\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0dL\'a0\'a0=\'a0displacement\'a0in\'a0the\'a0Left\'a0direction\'a0\'a0\'a0\'a0\'a0\'a0\}\'a0mm\
-\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0dP\'a0\'a0=\'a0displacement\'a0in\'a0the\'a0Posterior\'a0direction\'a0\}\
-\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0rmsold\'a0=\'a0RMS\'a0difference\'a0between\'a0input\'a0brick\'a0and\'a0base\'a0brick\
-\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0rmsnew\'a0=\'a0RMS\'a0difference\'a0between\'a0output\'a0brick\'a0and\'a0base\'a0brick
-\f0 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
-\cf0 \
-\
-\
-\
-}
+CNI processing wiki: http://cni.stanford.edu/wiki/General_data_processing_notes
+
+Kendrick’s preprocessing fmri script info: http://cni.stanford.edu/wiki/Preprocessfmri
+
+Vista lab processing wiki: http://white.stanford.edu/newlm/index.php/Main_Page
+
+helpful pre-processing notes for AFNI here: http://polaris.ssc.uwo.ca/mediawiki/index.php/AFNI_Workflow#Field_Maps
+
+———
+
+TO DO: 
+
+compare SPM, AFNI, and CNI motion correction params
+check CNI motion params to make sure there isn’t inordinate head movement for any subject at TR 5 of the 1st run; also look for excessive head movement/anomolous tSNR
+note: to deoblique data, call: 3dWarp -prefix deobl_ref -deoblique func_ref_vol.nii
+get all raw data in raw folder and rename
+
+
+
+****************************************************************************************
+
+open a terminal 
+
+ssh -XY kelly@mt-tam.stanford.edu
+
+from the server: 
+
+ssh -XY hennigan@cnic-smcclure
+
+to get onto CNI’s VM server
+
+then run
+
+python setupRawData.py 
+this script: 
+	creates symbolic links to raw data
+	creates some subject directories, if not already created
+	splits t2pd into separate niftis and saves out the 7th vol of the 1st functional run to use as a motion reference
+
+
+
+ 
+****************************************************************************************
+
+run preproc_afni.py to do the following: 
+1) Drop vols
+2) slice time correction
+3) motion correction
+
+saves out the follwoing mc params in a text file: 
+                    roll  = rotation about the I-S axis }
+                    pitch = rotation about the R-L axis } degrees CCW
+                    yaw   = rotation about the A-P axis }
+                      dS  = displacement in the Superior direction  }
+                      dL  = displacement in the Left direction      } mm
+                      dP  = displacement in the Posterior direction }
+    
+to view plots of movement:
+1dplot -volreg -dx 5 -xlabel Time vr_run1.1D
+
+
+4) smooth data 
+5) convert from raw to % change units
+
+also makes a binary mask of functional data using the smoothed first functional run (called 'func_mask')
+
+
+****************************************************************************************
+
+next, run preproc2_afni.py to do the following: 
+
+
+- concat motion params files, and plot it: 
+cat vr_run1.1D  vr_run2.1D  vr_run3.1D  vr_run4.1D  vr_run5.1D vr_run6.1D > vr_ALL.1D
+1dplot -dx 163 -xlabel Time -volreg -png vr_ALL -pngs 2000 vr_ALL.1D
+
+*if the alignment is not too crazy, then continue. If there's huge displacement from 
+runs 1-3 and 4-6, redo alignment using -twopass -twodup options in 3dvolreg, or try 
+something else. 
+ 
+- concat data, zero-out non-brain voxels using an automask
+
+****************************************************************************************
+
+next run coreg_afni.py, then orig2tlrc.py to do the following: 
+
+1) coregister t1-weighted and functional data
+2) coregister t2 and pd data w/functional data 
+3) normalize functional and structural data to group tlrc template 
+
+
+
+****************************************************************************************
+
+create glms for all subjects using the new motion params
+
+fit glm to data
+	
+________________
+
+
+————
+
+later on: 
+
+
+10) make a group mask
+
+3dMean -datum float -prefix mean_mask *mask+tlrc.HEAD
+3dcalc -datum byte -prefix group_mask -a mean_mask+tlrc -expr 'step(a-0.75)'
+
+—————————
+
+maybe use 3dClipLevel to set background voxels to zero?
+
+
+fit glm!!!
+
+
+Qs:
+> what are the 2 transforms that happen with the tlrc normalization? What is the random letter string file? 
+
+
+> BAD movement for subj 14 on run 6
+

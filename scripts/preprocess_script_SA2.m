@@ -13,7 +13,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% EDIT THIS:
 
-subj = '27';
+subj = '23';
 
 
 p=getSA2Paths(subj);
@@ -22,7 +22,7 @@ p=getSA2Paths(subj);
 datadir = p.raw;
 
 % what NIFTI files should we interpret as EPI runs?
-epifilenames{1} = 'run1_c1.nii.gz'; % ***
+epifilenames{1} = {'run1.nii.gz','run2.nii.gz'}; % ***
 
 % what NIFTI files should we interpret as the fieldmaps?
 % (to omit the fieldmap-based undistortion process, just set fieldmapB0files to [].)
@@ -52,7 +52,7 @@ fieldmaptimes = [];
 % what is the difference in TE (in milliseconds) for the two volumes in the fieldmaps?
 % (hint: after entering in the value of map_deltaf, check the value of map_delta in 
 % the CV vars of the spiral fieldmap sequence.)
-fieldmapdeltate = [];
+fieldmapdeltate = [2272];
  
 % should we attempt to unwrap the fieldmaps? (note that 1 defaults to a fast, 2D-based strategy; 
 % see preprocessfmri.m for details.)  if accuracy is really important to you and the 2D strategy 
@@ -63,7 +63,7 @@ fieldmapunwrap = 1;
 % how much smoothing (in millimeters) along each dimension should we use for the fieldmaps?
 % the optimal amount will depend on what part of the brain you care about.
 % I have found that 7.5 mm may be a good general setting.
-fieldmapsmoothing = [];
+fieldmapsmoothing = 7.5;
  
 % what NIFTI files should we interpret as in-plane runs?
 % inplanefilenames = matchfiles([datadir '/*inplane*nii*'],'tr');
@@ -83,7 +83,7 @@ epidesiredinplanesize = [];
  
 % what is the slice order for the EPI runs?
 % special case is [] which means to omit slice time correction.
-sliceOrder = [1:2:19,2:2:19];
+episliceorder = [1:2:19,2:2:19];
 episliceorder = repmat(episliceorder,1,3); % ***
  
 % what fieldmap should be used for each EPI run? ([] indicates default behavior, which is to attempt
@@ -93,12 +93,12 @@ episliceorder = repmat(episliceorder,1,3); % ***
 epifieldmapasst = [];
  
 % how many volumes should we ignore at the beginning of each EPI run?
-numepiignore = 2;
+numepiignore = 6;
  
 % what volume should we use as reference in motion correction? ([] indicates default behavior which is
 % to use the first volume of the first run; see preprocessfmri.m for details.  set to NaN if you
 % want to omit motion correction.)
-motionreference = [];
+motionreference = ['ref_r1_v1.nii.gz'];
  
 % for which volumes should we ignore the motion parameter estimates?  this should be a cell vector
 % of the same length as the number of runs.  each element should be a vector of indices, referring
@@ -108,7 +108,8 @@ motionreference = [];
 % volumes (if there is a tie, we just take the mean).  [] indicates default behavior which is to 
 % do nothing special.
 epiignoremcvol = [];
- 
+
+
 % by default, we tend to use double format for computation.  but if memory is an issue,
 % you can try setting <dformat> to 'single', and this may reduce memory usage.
 dformat = 'single';
@@ -154,19 +155,21 @@ maskoutnans = [];
 % (we automatically make parent directories if necessary, and we also create a mean.nii file
 % with the mean volume and a valid.nii file with a binary mask of the valid voxels.)
 
-savefile = [datadir '/pp_mux3_run1.nii.gz']; % ***
+% outdir = p.func_proc; 
+% out_prefix = 'pp_';
+savefile = [p.func_proc '/pp_run%02d.nii'];
+
 
 % what .txt file should we keep a diary in?
-diaryfile = [datadir '/mux3_run1.txt'];
+% diaryfile = [p.func_proc '/preproc.txt'];
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW:
 
-  mkdirquiet(stripfile(diaryfile));
-  diary(diaryfile);
+%   mkdirquiet(stripfile(diaryfile));
+%   diary(diaryfile);
   
-  rp = 2.0; % acceleration factor not in the nifti header for mux sequences
-path('/usr/local/spm8',path)
+path('/Applications/spm8',path)
 preprocessfmri_CNI;
   diary off;
  

@@ -1,9 +1,7 @@
 function setSA2Paths(subject)
 
-% gets relevant subject directories as specified in getSAPaths and creates 
-% them if they don't already exist. If directory already does exist, matlab 
-% gives a warning to say so and doesn't overwrite it.  At least this is the 
-% case on Rexy...
+% gets relevant subject directories as specified in getSAPaths and creates
+% them if they don't already exist.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -11,10 +9,12 @@ expPaths = getSA2Paths(subject);
 
 dirNames = fieldnames(expPaths);
 
-for d = 2:numel(dirNames)   % 1st directory is base dir (already exists)
-    mkdir(expPaths.(dirNames{d}));
+for d = 4:numel(dirNames)   % 1st directories are main SA2 directories 
+    if ~exist(expPaths.(dirNames{d}),'dir')
+        mkdir(expPaths.(dirNames{d}));
+    end
 end
 
-fprintf(['\n\nmade exp directories for subject ',subject,'\n\n']);
+fprintf(['\n\nset up exp directories for subject ',subject,'\n\n']);
 
 end

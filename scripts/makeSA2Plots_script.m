@@ -63,7 +63,7 @@ xlabel('trial number')
 ylabel('Observed and Modeled Choices (%)')
 
 
-
+end
 
 if savePlots
     outFPath = fullfile(saveDir,'Pchoices.pdf');
