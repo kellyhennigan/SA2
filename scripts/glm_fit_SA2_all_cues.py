@@ -31,13 +31,13 @@ print 'Current working directory: '+cdir
 cmd = ('3dDeconvolve '
 	#'-nodata 1956 1.5 '				# nodata option - comment this out if data is provided as -input
 	'-input func_proc/pp_run1+tlrc. func_proc/pp_run2+tlrc. func_proc/pp_run3+tlrc. func_proc/pp_run4+tlrc. func_proc/pp_run5+tlrc. func_proc/pp_run6+tlrc. '
-	'-jobs 8'					# split up into this many sub-processes if using a multi CPU machine 	
-	'-xjpeg Xmat ' 					# saves out an image of the design matrix as filename
+	'-jobs 8 '					# split up into this many sub-processes if using a multi CPU machine 	
+	'-xjpeg '+res_dir+'Xmat ' 					# saves out an image of the design matrix as filename
 	'-mask func_proc/func_mask+tlrc. '		# or -automask
 	'-polort 4 '					# number of baseline regressors per run
 	'-dmbase '					# de-mean baseline regressors
 	'-xout ' 					# writes out the design matrix to the screen
-	'-num_stimts 27 ' 				# number of stimulus time series that will be used
+	'-num_stimts 37 ' 				# number of stimulus time series that will be used
 	'-stim_file 1 regs/gain+1_base_can_runALL  -stim_label 1 gain+1_base '
 	'-stim_file 2 regs/gain+PE_base_can_runALL -stim_label 2 gain+PE_base '
 	'-stim_file 3 regs/gain0_base_can_runALL -stim_label 3 gain0_base '
@@ -57,14 +57,24 @@ cmd = ('3dDeconvolve '
 	'-stim_file 17 regs/contextevent_base_can_runALL -stim_label 17 neutralcue '
 	'-stim_file 18 regs/contextevent_stress_can_runALL -stim_label 18 shockcue '
 	'-stim_file 19 regs/shock_can_runALL -stim_label 19 shock '
-	'-stim_file 20 regs/cuepair1_can_runALL -stim_label 20 cuepair1 '
-	'-stim_file 21 regs/cuepair2_can_runALL -stim_label 21 cuepair2 '
-	'-stim_file 22 "regs/motion_runALL[0]" -stim_base 22 -stim_label 22 Roll '
-	'-stim_file 23 "regs/motion_runALL[1]" -stim_base 23 -stim_label 23 Pitch '
-	'-stim_file 24 "regs/motion_runALL[2]" -stim_base 24 -stim_label 24 Yaw '
-	'-stim_file 25 "regs/motion_runALL[3]" -stim_base 25 -stim_label 25 dS '
-	'-stim_file 26 "regs/motion_runALL[4]" -stim_base 26 -stim_label 26 dL '
-	'-stim_file 27 "regs/motion_runALL[5]" -stim_base 27 -stim_label 27 dP '
+	'-stim_file 20 "regs/cuepair1_can_runALL[0]" -stim_label 20 cuepair1a '
+	'-stim_file 21 "regs/cuepair1_can_runALL[1]" -stim_label 21 cuepair1b '
+	'-stim_file 22 "regs/cuepair1_can_runALL[2]" -stim_label 22 cuepair1c '
+	'-stim_file 23 "regs/cuepair1_can_runALL[3]" -stim_label 23 cuepair1d '
+	'-stim_file 24 "regs/cuepair1_can_runALL[4]" -stim_label 24 cuepair1e '
+	'-stim_file 25 "regs/cuepair1_can_runALL[5]" -stim_label 25 cuepair1f '
+	'-stim_file 26 "regs/cuepair2_can_runALL[0]" -stim_label 26 cuepair2a '
+	'-stim_file 27 "regs/cuepair2_can_runALL[1]" -stim_label 27 cuepair2b '
+	'-stim_file 28 "regs/cuepair2_can_runALL[2]" -stim_label 28 cuepair2c '
+	'-stim_file 29 "regs/cuepair2_can_runALL[3]" -stim_label 29 cuepair2d '
+	'-stim_file 30 "regs/cuepair2_can_runALL[4]" -stim_label 30 cuepair2e '
+	'-stim_file 31 "regs/cuepair2_can_runALL[5]" -stim_label 31 cuepair2f '
+	'-stim_file 32 "regs/motion_runALL[0]" -stim_base 32 -stim_label 32 Roll '
+	'-stim_file 33 "regs/motion_runALL[1]" -stim_base 33 -stim_label 33 Pitch '
+	'-stim_file 34 "regs/motion_runALL[2]" -stim_base 34 -stim_label 34 Yaw '
+	'-stim_file 35 "regs/motion_runALL[3]" -stim_base 35 -stim_label 35 dS '
+	'-stim_file 36 "regs/motion_runALL[4]" -stim_base 36 -stim_label 36 dL '
+	'-stim_file 37 "regs/motion_runALL[5]" -stim_base 37 -stim_label 37 dP '
 	'-num_glt 1 -glt_label 1 shockcue-neutralcue -gltsym "SYM: +shockcue -neutralcue" ' 
 	'-errts '+res_dir+'glm_errts ' 			# to save out the residual time series
 	'-fout ' 					# output the partial and full model F

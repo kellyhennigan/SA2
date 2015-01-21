@@ -18,7 +18,7 @@ import os,sys
 #data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
 data_dir = '/home/hennigan/SA2/data/'	
 
-subjects = ['17','18','19','20']			# subject to process
+subjects = ['17']			# subject to process
 
 ##########################################################################################
 

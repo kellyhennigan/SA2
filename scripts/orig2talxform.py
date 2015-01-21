@@ -15,8 +15,9 @@ import os,sys
 #data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
 data_dir = '/home/hennigan/SA2/data/'	
 
-subjects = ['10','11'] # subjects to process
+subjects = ['28'] # subjects to process
 
+runs = [1,2,3] # functional runs to normalize
 
 ##########################################################################################
 
@@ -57,11 +58,12 @@ for subject in subjects:
 	os.system(cmd)
 	
 	
-	
-	###### normalize cal, func_reference volume
+	###### normalize calibration & func_reference volumes and func_mask
 	cmd = '@auto_tlrc -apar t1+tlrc. -input cal_ns_al+orig. -dxyz 1.6'
 	os.system(cmd)
 	cmd = '@auto_tlrc -apar t1+tlrc. -input func_ref_ns+orig. -dxyz 1.6'
+	os.system(cmd)
+	cmd = '@auto_tlrc -apar t1+tlrc. -input func_mask+orig. -dxyz 1.6'
 	os.system(cmd)
 	
 	# rename out files 
@@ -71,16 +73,16 @@ for subject in subjects:
 	os.system(cmd)
 	
 	
-	###### finally, normalize functional data and functional mask
-	cmd = '@auto_tlrc -apar t1+tlrc. -input func_mask+orig. dxyz 1.6'
-	os.system(cmd)
+	###### finally, normalize functional data	
+	for r in runs:
+		cmd = '@auto_tlrc -apar t1+tlrc. -input psraorun'+str(r)+'+orig. -dxyz 1.6'
+		os.system(cmd)
+
+		# rename out files 
+		cmd = '3drename psraorun'+str(r)+'+tlrc. pp_run'+str(r)+'+tlrc'		
+		os.system(cmd)
 	
-	cmd = '@auto_tlrc -apar t1+tlrc. -input pp_ALL_bet+orig. dxyz 1.6'
-	os.system(cmd)
-	
-	# rename out files 
-	cmd = '3drename pp_ALL_bet+tlrc pp_func+tlrc'
-	os.system(cmd)
+#@auto_tlrc -apar t1+tlrc. -input psraorun4+orig. -dxyz 1.6
+#3drename psraorun4+tlrc. pp_run4+tlrc
 	
 
-	
