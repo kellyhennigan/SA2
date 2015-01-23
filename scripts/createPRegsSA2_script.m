@@ -65,7 +65,7 @@ for s=1:numel(subjs)
     % parametric regressor stim loop
     for k=1:numel(pstims)
         
-        this_pstim = stims{k};
+        this_pstim = pstims{k};
         
         for c = 1:numel(contexts)
             

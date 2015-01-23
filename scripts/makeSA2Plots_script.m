@@ -27,7 +27,7 @@ fSize = 16;
 Conds=[1,2]; % gain and loss
 
 cols=getSA2Colors; 
-cols = [cols(2,:);cols(1,:);cols(3,:);cols(4,:)];
+% cols = [cols(2,:);cols(1,:);cols(3,:);cols(4,:)];
 
 %%  plot of observed and modeled choices
 
@@ -36,9 +36,13 @@ set(gca,'fontName',font,'fontSize',fSize)
 set(gca,'box','off');
 set(gcf,'Color','w','InvertHardCopy','off','PaperPositionMode','auto');
 
-for cc=1:2
+col_idx = 0; % color index
+
+for cc=1:2                    % context - base or stress
 
 for cond = 1:numel(Conds)      % gains and losses
+    
+    col_idx = col_idx+1;
     
     p = getRLparams(subStr,cond); % best parameter fits
     
@@ -48,9 +52,9 @@ for cond = 1:numel(Conds)      % gains and losses
     
     choices(choices==2)=0;  % recode choices as 0 and 1 for plotting
     
-    scatter([1:36]',nanmean(choices,2),40,cols(cond,:),'filled')
+    scatter([1:36]',nanmean(choices,2),40,cols(col_idx,:),'filled')
     
-    plot([1:36]',nanmean(choices,2),'color',cols(cond,:))
+    plot([1:36]',nanmean(choices,2),'color',cols(col_idx,:))
     
     plot([1:36]',nanmean(Pc1,2),'color',[.5 .5 .5])
     

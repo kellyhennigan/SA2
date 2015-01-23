@@ -11,7 +11,7 @@ data_dir = '/home/hennigan/SA2/data/'
 
 subjects = ['18','19','23','24','25','27']						# subject (string) to process
 
-out_str = 'glm2'					# string for output files
+out_str = 'glm3'					# string for output files
 
 ##########################################################################################
 
@@ -84,7 +84,7 @@ for subject in subjects:
 		'-stim_file 35 "regs/motion_runALL[3]" -stim_base 35 -stim_label 35 dS '
 		'-stim_file 36 "regs/motion_runALL[4]" -stim_base 36 -stim_label 36 dL '
 		'-stim_file 37 "regs/motion_runALL[5]" -stim_base 37 -stim_label 37 dP '
-		'-num_glt 8 '
+		'-num_glt 10 '
 		'-glt_label 1 shockcue-neutralcue -gltsym "SYM: +shockcue -neutralcue" '
 		'-glt_label 2 gain+1-gain0 -gltsym "SYM: +gain+1_base +gain+1_stress -gain0_base -gain0_stress" '
 		'-glt_label 3 loss0-loss-1 -gltsym "SYM: +loss0_base +loss0_stress -loss-1_base -loss-1_stress" '
@@ -93,8 +93,10 @@ for subject in subjects:
 		'-glt_label 6 loss+PE_base_vs_stress -gltsym "SYM: +loss+PE_base -loss+PE_stress " '
 		'-glt_label 7 loss-PE_base_vs_stress -gltsym "SYM: +loss-PE_base -loss-PE_stress " '
 		'-glt_label 8 cuepairs -gltsym "SYM: +cuepair1a +cuepair1b +cuepair1c +cuepair1d +cuepair1e +cuepair1f +cuepair2a +cuepair2b +cuepair2c +cuepair2d +cuepair2e +cuepair2f " '
+		'-glt_label 9 gain+PE -gltsym "SYM: +gain+PE_base +gain+PE_stress" '
+		'-glt_label 10 gainALLPE -gltsym "SYM: +gain+PE_base +gain+PE_stress +gain-PE_base +gain-PE_stress" '
 		#'-errts '+res_dir+out_str+'_errts ' 			# to save out the residual time series
-		'-fout ' 					# output the partial and full model F
+		'-tout ' 					# output the partial and full model F
 		'-rout ' 					# output the partial and full model R2
 		'-bucket '+res_dir+out_str+' ' 			# save out all info to filename w/prefix
 		'-cbucket '+res_dir+out_str+'_B ') 		# save out only regressor coefficients to filename w/prefix

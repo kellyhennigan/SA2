@@ -23,7 +23,8 @@ t1=3
 t2pd=10
 dti=12
 fmaps=[5,0,0,0] 	# should correspond to fieldmaps 1,2,3,4, respectively
-
+cal_scan1 = 9 		 # scan number corresponding to the calibration scan run before functional run 1 
+cal_scan4 = 18 		 # scan number corresponding to the calibration scan run before functional run 4
 
 
 
@@ -129,15 +130,43 @@ for r in fmaps:
 	fmap_num = fmap_num+1
 	
 	
+# calibration scans
+filePath = subj_nims_dir+exam_no+'_'+str(cal_scan1)+'_1_mux3_cal_DEV/'+exam_no+'_'+str(cal_scan1)+'_1.nii.gz'
+	if os.path.exists(filePath):
+		cmd = 'ln -s '+filePath+' cal_run1.nii.gz'
+		os.system(cmd)	
+		
+filePath = subj_nims_dir+exam_no+'_'+str(cal_scan4)+'_1_mux3_cal_DEV/'+exam_no+'_'+str(cal_scan4)+'_1.nii.gz'
+	if os.path.exists(filePath):
+		cmd = 'ln -s '+filePath+' cal_run4.nii.gz'
+		os.system(cmd)	
+	
 
-# create a functional reference volume nifti using the 7th vol of the first run (after dropping 1st vols this will be the 1st vol) 
+
+# create a functional reference volume nifti using the 7th vol of the first run 
+# (after dropping 1st vols this will be the 1st vol) 
 cmd = "nifti_tool -cbl -prefix func_ref_vol.nii.gz -infiles run1.nii.gz[6]"
 os.system(cmd)	
 os.rename(raw_dir+'func_ref_vol.nii.gz',pp_dir+'func_ref_vol.nii.gz') # move func_ref_vol to subject's pp_dir
-		
+
+
+# create a 2nd functional reference volume nifti using the 7th vol of the fourth run 
+# (after dropping 1st vols this will be the 1st vol) 
+cmd = "nifti_tool -cbl -prefix run4_vol1.nii.gz -infiles run4.nii.gz[6]"
+os.system(cmd)	
+os.rename(raw_dir+'run4_vol1.nii.gz',pp_dir+'run4_vol1.nii.gz') # move func_ref_vol to subject's pp_dir
+
 
 # separate the t2w and pd volumes 
 cmd = "nifti_tool -cbl -prefix t2.nii.gz -infiles t2pd.nii.gz[0]"
 os.system(cmd)	
 cmd = "nifti_tool -cbl -prefix pd.nii.gz -infiles t2pd.nii.gz[1]"
 os.system(cmd)	
+
+
+# create a reference volume from the 2nd volume of calibrations scans 1 and 4
+cmd = "nifti_tool -cbl -prefix cal_run1_v2.nii.gz -infiles cal_run1.nii.gz[1]"
+os.system(cmd)	
+cmd = "nifti_tool -cbl -prefix cal_run4_v2.nii.gz -infiles cal_run4.nii.gz[1]"
+os.system(cmd)			
+

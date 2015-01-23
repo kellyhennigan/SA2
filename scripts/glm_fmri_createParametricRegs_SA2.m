@@ -17,9 +17,11 @@ function [pos_preg,neg_preg] = glm_fmri_createParametricRegs_SA2(subj, stim, run
 
 %
 % OUTPUTS:
-%         pos_preg,neg_preg - parametric regressor time series in units of 
-%           TRs from the requested run
-
+%         pregs - if 1 output is desired, then one parametric regressor for
+%           both pos and neg PEs will be returned. If 2 outputs are desired,
+%           then positive and negative p_regs will be given as separete
+%           0-centered regressors pos_preg,neg_preg - parametric regressor
+%           
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,6 +64,63 @@ end
 
 [~,PE,~] = fitQLearningMod(ab, choices, outcomes);
 
+
+if nargout<2
+
+    fprintf('\ncomputing 1 parametric regressor for positive and negative PEs\n\n');
+    
+    onsets = [];   reg_tr = [];
+    
+    % first do positive PE, then negative PEs
+    if k==1
+        thisPE =  PE(PE>0);  % positive PEs
+        thisCond = posPEmod; % which condition is this modulating?
+    else
+        thisPE = PE(PE<=0);
+        thisCond = negPEmod;
+    end
+    
+    % center mean at 0
+    thisPE = thisPE - mean(thisPE);
+    
+    
+    % get PE onset times
+    onsets = getSA2StimOnsets(subj,thisCond,run);
+    
+    
+    % make sure the # of onsets matches the number of positive PE values
+    assert(isequal(numel(thisPE),numel(onsets)),'# of onsets and PEs arent equal');
+          
+        onsets = round(onsets ./ sample_rate); % convert to sample_rate units
+        
+        t = zeros(nVols.*TR./sample_rate,1); % define regressor time series
+        
+        t(onsets) = thisPE; % reg is parametrically modulated by PE value
+        
+        reg_ts = conv(t, hrf); % convolve upsampled time series with hrf
+        
+        reg_ts = (reg_ts./max(reg_ts));    % scaled to peak at 1
+        
+        reg_tr = reg_ts(1:TR/sample_rate:end); % convert time series into units of TRs
+        
+        reg_tr = reg_tr(1:nVols); % convolution makes the reg ts longer than nVols
+        
+    
+    % assign to pos/neg out variables 
+    if k==1
+        pos_preg = reg_tr;
+    else
+        neg_preg = reg_tr;
+    end
+    
+
+end % k = 1:2 (pos/neg)
+
+    
+    if nargout==2
+        
+          fprintf('\ncomputing parametric regressors separately for positive and negative PEs\n\n');
+  
 for k = 1:2 % do both positive and negative PEs (for either gains or losses)
     
     onsets = [];   reg_tr = [];

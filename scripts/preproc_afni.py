@@ -19,11 +19,11 @@ doCorrectSliceTiming = 1		# correct for slice-timing differences? adds prefix 'a
 doCorrectMotion = 1			# correct for head movement? adds prefix 'r'
 doSmooth = 1				# smooth data? adds prefix 's'					
 doConvertUnits = 1 			# convert from raw to % change units? adds prefix 'p'
-#doConcatRuns = 0  		    	# concatenate all functional runs? calls file pp_all
+doConcatRuns = 0  		    	# concatenate all functional runs? calls file pp_all
 #doCoreg = 0				# coregister t1 to functional data? adds prefix 'c' to t1 file
 
 
-# define relevant variables for each pre-processing step as needed
+################# define relevant variables for each pre-processing step as needed
 if doOmit1stVols:
 	omitNVols = 6   # integer defining the 	# of vols at the beginning of each run to drop
 	
@@ -37,10 +37,19 @@ if doCorrectMotion:
 if doSmooth: 
 	smooth_mm = 3 						# fwhm gaussian kernel to use for smoothing (in mm)
 
+if doConcatRuns
+	all_mc_str = 'vr_ALL' 				# string to use for concatenated mc params			
+	all_data_str = 'pp_ALL'				# " " concatenated data
+
+
+##########################################################################################
+# DO IT
+
 
 os.chdir(data_dir)
 cdir = os.getcwd()
 print 'Current working directory: '+cdir
+
 
 # now loop through subjects, clusters and bricks to get data
 for subject in subjects:
@@ -50,6 +59,10 @@ for subject in subjects:
 	# define subject's raw & pre-processed directories 
 	inDir = data_dir+'/'+subject+'/raw/' 		
 	outDir = data_dir+'/'+subject+'/func_proc/' 
+	
+	mc_files = ''	# will be a string w/the names of all mc files 
+	pp_files = ''	# will be a string w/the names of all pre-processed data files 
+	
 	
 	for r in runs:
     	# cd to subject's raw directory & define inStr to identify input data file
@@ -70,7 +83,8 @@ for subject in subjects:
 		# mv afni-formatted data to outDir and cd to outDir
 		os.rename(inDir+outStr+'+orig.HEAD',outDir+outStr+'+orig.HEAD')
 		os.rename(inDir+outStr+'+orig.BRIK',outDir+outStr+'+orig.BRIK')
-	 	os.chdir(outDir) 					
+	 	os.chdir(outDir) 	
+	 					
 		
 		# slice time correct
 		if doCorrectSliceTiming:
@@ -79,6 +93,7 @@ for subject in subjects:
 			print cmd
 			os.system(cmd)
 			inStr = outStr	# update string to reflect most recent processing step
+			
 			
 		# motion correct
 		if doCorrectMotion:
@@ -101,11 +116,13 @@ for subject in subjects:
 			os.system(cmd)
 			inStr = outStr	# update string to reflect most recent processing step
 			
+			
 		# if this is the first run, make a binary mask of the smoothed data
 		if r==1:
 			cmd = '3dAutomask -prefix func_mask '+inStr+'+orig'
 			print cmd
 			os.system(cmd)
+		
 		
 		# convert from raw to percent BOLD signal change units
 		if doConvertUnits:
@@ -115,30 +132,42 @@ for subject in subjects:
 			os.system(cmd)
 			inStr = outStr	# string signifying the most recent processing step
 			
-		os.remove('mean_run'+str(r)+'+orig.BRIK')
-		os.remove('mean_run'+str(r)+'+orig.HEAD')
+			os.remove('mean_run'+str(r)+'+orig.BRIK')
+			os.remove('mean_run'+str(r)+'+orig.HEAD')
+			
+			
+		# convert from raw to percent BOLD signal change units
+		if doConcatRuns:
+			# update strings of all mc_param files and processed data files
+			mc_files = mc_files+' '+mc_file
+			pp_files = pp_files+' '+inStr+'+orig'
+	
+	
+	if doConcatRuns:	
+		# concatenate mc_param files 
+		cmd = 'cat '+mc_files+' > '+all_mc_str+'.1D'
+		print cmd
+		os.system(cmd)
+
+		# save out a plot of all mc_params
+		cmd = '1dplot -dx 163 -xlabel Time -volreg -png mparams_fig -pngs 2000 '+all_mc_str+'.1D'
+		print cmd
+		os.system(cmd)
+
+		# concatenate all runs
+		cmd = '3dTcat -prefix '+all_data_str+' '+pp_files
+		print cmd
+		os.system(cmd)
+	
+   		# bet concatenated runs
+		#cmd = '3dAutomask -apply_prefix '+all_data_str+'_bet '+all_data_str+'+orig.'
+		#print cmd
+		#os.system(cmd)
+	
 		
 	print 'FINISHED SUBJECT '+subject
 			
-		# update strings of all mc_param files and processed data files
-		#mc_files = mc_files+' '+mc_file
-		#pp_files = pp_files+' '+inStr+'+orig'
 						
-# concatenate mc_param files 
-#cmd = 'cat '+mc_files+' > '+mc_str+'ALL.1D'
-#print cmd
-#os.system(cmd)
-
-# save out a plot of all mc_params
-#cmd = '1dplot -dx 163 -xlabel Time -volreg -png mparams_fig -pngs 2000 '+mc_str+'ALL.1D'
-#print cmd
-#os.system(cmd)
-
-# concatenate all runs
-#cmd = '3dTcat -prefix pp_all '+pp_files
-#print cmd
-#os.system(cmd)
-
 # mask out voxels outside the brain
 #cmd = "3dcalc -a pp_all+orig. -b func_mask+orig. -expr 'a*b' -prefix pp_all_bet"
 #print cmd
