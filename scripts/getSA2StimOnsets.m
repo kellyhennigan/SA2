@@ -69,6 +69,7 @@ switch stim
         elseif strcmp(stim,'cuepair2')
             onsets = cue_onset(cond==2);
             
+            
         elseif strcmp(stim,'gain+1')
             onsets = outcome_onset(cond==1 & outcome==1);
             

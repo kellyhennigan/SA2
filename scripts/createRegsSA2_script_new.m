@@ -24,13 +24,9 @@ close all
 %     'shock'};                   % shock - shock delivery
 
 
-stims = {'gain+1',...                % gain+1 - win outcomes
-    'gain0',...                 % gain0 - nothing outcomes for gain trials
-    'loss-1',...                % loss-1 - loss outcomes
-    'loss0',...                 % loss0 - nothing outcomes for loss trials
-    'contextevent',...          % contextevent - neutral or shock cue depending on context
-    'shock'};                   % shock - shock delivery
-
+stims = {'gain_oc',...          % gain_oc - gain outcome period
+    'gain_p_oc'};            % gain_p_oc - " " modulated by win or nothing outcome 
+   
 
 [subjs,CB] = getSA2Subjects('all'); % subjects and context order code
 

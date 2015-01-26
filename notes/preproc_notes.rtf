@@ -23,6 +23,7 @@ get all raw data in raw folder and rename
 
 * make single PE regressors for both positive and negative PEs
 
+
 ****************************************************************************************
 
 open a terminal 
@@ -35,13 +36,17 @@ ssh -XY hennigan@cnic-smcclure
 
 to get onto CNI’s VM server
 
-then run
+then run:
 
-python setupRawData.py 
+1) python setupRawData.py 
 this script: 
 	creates symbolic links to raw data
 	creates some subject directories, if not already created
 	splits t2pd into separate niftis and saves out the 7th vol of the 1st functional run to use as a motion reference
+	creates single volume niftis of the first volumes from runs 1 and 4 and their corresponding calibration scans 
+
+2) coreg_prep_afni.py
+	skull-strips anatomicals (t1,t2,pd) and moves them into 
 
 
 
@@ -128,4 +133,19 @@ Qs:
 
 
 > BAD movement for subj 14 on run 6
+
+
+-------------------
+
+QCs: 
+
+motion correction - check for jumps in root mean square in output RMS in motion params file
+					also, jump between the 1st and last vols of func data to look for differences in vol position
+					
+coreg - check out coregistration using AddEdge: 
+
+cd AddEdge
+the type: @AddEdge
+
+
 

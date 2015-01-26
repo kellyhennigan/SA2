@@ -143,18 +143,31 @@ filePath = subj_nims_dir+exam_no+'_'+str(cal_scan4)+'_1_mux3_cal_DEV/'+exam_no+'
 	
 
 
-# create a functional reference volume nifti using the 7th vol of the first run 
-# (after dropping 1st vols this will be the 1st vol) 
-cmd = "nifti_tool -cbl -prefix func_ref_vol.nii.gz -infiles run1.nii.gz[6]"
-os.system(cmd)	
-os.rename(raw_dir+'func_ref_vol.nii.gz',pp_dir+'func_ref_vol.nii.gz') # move func_ref_vol to subject's pp_dir
+#####################
+
+# create a functional reference volume niftis for: 
+# run1 vol1, (7th volume will be the first one after 1st vols are dropped) 
+# run4 vol1 ,
+# the 2nd volumes of cal scans from run1 and run4
 
 
-# create a 2nd functional reference volume nifti using the 7th vol of the fourth run 
-# (after dropping 1st vols this will be the 1st vol) 
-cmd = "nifti_tool -cbl -prefix run4_vol1.nii.gz -infiles run4.nii.gz[6]"
+#  run1_vol1 reference volume 
+cmd = "nifti_tool -cbl -prefix ref1.nii.gz -infiles run1.nii.gz[6]"
 os.system(cmd)	
-os.rename(raw_dir+'run4_vol1.nii.gz',pp_dir+'run4_vol1.nii.gz') # move func_ref_vol to subject's pp_dir
+
+# run4_vol1 reference volume 
+cmd = "nifti_tool -cbl -prefix ref4.nii.gz -infiles run4.nii.gz[6]"
+os.system(cmd)	
+
+# cal_run1 and cal_run4 reference volumes (take the 2nd vol)
+cmd = "nifti_tool -cbl -prefix cal1.nii.gz -infiles cal_run1.nii.gz[1]"
+os.system(cmd)	
+cmd = "nifti_tool -cbl -prefix cal4.nii.gz -infiles cal_run4.nii.gz[1]"
+os.system(cmd)			
+
+# move ref files to func_proc dir
+cmd = 'mv ref*nii.gz cal1.nii.gz cal4.nii.gz '+pp_dir					
+os.system(cmd)
 
 
 # separate the t2w and pd volumes 
@@ -164,9 +177,4 @@ cmd = "nifti_tool -cbl -prefix pd.nii.gz -infiles t2pd.nii.gz[1]"
 os.system(cmd)	
 
 
-# create a reference volume from the 2nd volume of calibrations scans 1 and 4
-cmd = "nifti_tool -cbl -prefix cal_run1_v2.nii.gz -infiles cal_run1.nii.gz[1]"
-os.system(cmd)	
-cmd = "nifti_tool -cbl -prefix cal_run4_v2.nii.gz -infiles cal_run4.nii.gz[1]"
-os.system(cmd)			
 
