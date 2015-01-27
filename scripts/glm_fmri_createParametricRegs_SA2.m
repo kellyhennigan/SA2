@@ -1,4 +1,4 @@
-function [pos_preg,neg_preg] = glm_fmri_createParametricRegs_SA2(subj, stim, run, nVols, TR)
+function [reg_tr,varargout] = glm_fmri_createParametricRegs_SA2(subj, stim, run, nVols, TR)
 %
 % function to create parametric regressors for experiment SA2
 %
@@ -26,6 +26,7 @@ function [pos_preg,neg_preg] = glm_fmri_createParametricRegs_SA2(subj, stim, run
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
+fprintf(['number of nargout: ' num2str(nargout)])
 
 % irf parameters
 sample_rate = 0.1;                  % sample rate in seconds (upsampled)
@@ -61,41 +62,103 @@ switch stim
         
 end
 
-
+ 
 [~,PE,~] = fitQLearningMod(ab, choices, outcomes);
+% omit any no response trials 
+idx=find(isnan(choices));
+if ~isempty(idx)
+    PE(idx) = [];
+end
+
+   
+ if nargout==2
+        
+          fprintf('\ncomputing parametric regressors separately for positive and negative PEs\n\n');
+          
+  
+for k = 1:2 % do both positive and negative PEs (for either gains or losses)
+    
+    onsets = [];   this_reg = [];
+    
+    % first do positive PE, then negative PEs
+    if k==1
+        thisPE =  PE(PE>0);  % positive PEs
+        thisCond = posPEmod; % which condition is this modulating?
+    else
+        thisPE = PE(PE<=0);
+        thisCond = negPEmod;
+    end
+    
+    % center mean at 0
+    thisPE = thisPE - mean(thisPE);
+    
+    % get PE onset times
+    onsets = getSA2StimOnsets(subj,thisCond,run);
+   % omit any no response trials 
+    if ~isempty(idx)
+        onsets(idx) = [];
+    end
+
+   
+    
+    % make sure the # of onsets matches the number of positive PE values
+    assert(isequal(numel(thisPE),numel(onsets)),'# of onsets and PEs arent equal');
+          
+        onsets = round(onsets ./ sample_rate); % convert to sample_rate units
+        
+        t = zeros(nVols.*TR./sample_rate,1); % define regressor time series
+        
+        t(onsets) = thisPE; % reg is parametrically modulated by PE value
+        
+        reg_ts = conv(t, hrf); % convolve upsampled time series with hrf
+        
+        reg_ts = (reg_ts./max(reg_ts));    % scaled to peak at 1
+        
+        this_reg = reg_ts(1:TR/sample_rate:end); % convert time series into units of TRs
+        
+        this_reg = this_reg(1:nVols); % convolution makes the reg ts longer than nVols
+        
+    
+    % assign to pos/neg out variables 
+    if k==1
+        reg_tr = this_reg; % positive PEs
+    else
+       varargout{1} = this_reg; % negative PEs
+    end
+    
+
+end % k = 1:2 (pos/neg)
 
 
-if nargout<2
+
+ elseif nargout==1
 
     fprintf('\ncomputing 1 parametric regressor for positive and negative PEs\n\n');
     
     onsets = [];   reg_tr = [];
-    
-    % first do positive PE, then negative PEs
-    if k==1
-        thisPE =  PE(PE>0);  % positive PEs
-        thisCond = posPEmod; % which condition is this modulating?
-    else
-        thisPE = PE(PE<=0);
-        thisCond = negPEmod;
-    end
+   
     
     % center mean at 0
-    thisPE = thisPE - mean(thisPE);
+    PE = PE - mean(PE);
     
     
     % get PE onset times
-    onsets = getSA2StimOnsets(subj,thisCond,run);
+    onsets = getSA2StimOnsets(subj,stim(1:4),run);
     
+   % omit any no response trials 
+    if ~isempty(idx)
+        onsets(idx) = [];
+    end
+
     
     % make sure the # of onsets matches the number of positive PE values
-    assert(isequal(numel(thisPE),numel(onsets)),'# of onsets and PEs arent equal');
+    assert(isequal(numel(PE),numel(onsets)),'# of onsets and PEs arent equal');
           
         onsets = round(onsets ./ sample_rate); % convert to sample_rate units
         
         t = zeros(nVols.*TR./sample_rate,1); % define regressor time series
         
-        t(onsets) = thisPE; % reg is parametrically modulated by PE value
+        t(onsets) = PE; % reg is parametrically modulated by PE value
         
         reg_ts = conv(t, hrf); % convolve upsampled time series with hrf
         
@@ -106,74 +169,4 @@ if nargout<2
         reg_tr = reg_tr(1:nVols); % convolution makes the reg ts longer than nVols
         
     
-    % assign to pos/neg out variables 
-    if k==1
-        pos_preg = reg_tr;
-    else
-        neg_preg = reg_tr;
-    end
-    
-
-end % k = 1:2 (pos/neg)
-
-    
-    if nargout==2
-        
-          fprintf('\ncomputing parametric regressors separately for positive and negative PEs\n\n');
-  
-for k = 1:2 % do both positive and negative PEs (for either gains or losses)
-    
-    onsets = [];   reg_tr = [];
-    
-    % first do positive PE, then negative PEs
-    if k==1
-        thisPE =  PE(PE>0);  % positive PEs
-        thisCond = posPEmod; % which condition is this modulating?
-    else
-        thisPE = PE(PE<=0);
-        thisCond = negPEmod;
-    end
-    
-    % center mean at 0
-    thisPE = thisPE - mean(thisPE);
-    
-    
-    % get PE onset times
-    onsets = getSA2StimOnsets(subj,thisCond,run);
-    
-    
-    % make sure the # of onsets matches the number of positive PE values
-    assert(isequal(numel(thisPE),numel(onsets)),'# of onsets and PEs arent equal');
-          
-        onsets = round(onsets ./ sample_rate); % convert to sample_rate units
-        
-        t = zeros(nVols.*TR./sample_rate,1); % define regressor time series
-        
-        t(onsets) = thisPE; % reg is parametrically modulated by PE value
-        
-        reg_ts = conv(t, hrf); % convolve upsampled time series with hrf
-        
-        reg_ts = (reg_ts./max(reg_ts));    % scaled to peak at 1
-        
-        reg_tr = reg_ts(1:TR/sample_rate:end); % convert time series into units of TRs
-        
-        reg_tr = reg_tr(1:nVols); % convolution makes the reg ts longer than nVols
-        
-    
-    % assign to pos/neg out variables 
-    if k==1
-        pos_preg = reg_tr;
-    else
-        neg_preg = reg_tr;
-    end
-    
-
-end % k = 1:2 (pos/neg)
-
-
-
-
-
-
-
-
+ end % nargout

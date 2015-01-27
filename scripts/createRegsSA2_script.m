@@ -22,7 +22,7 @@ context_run_idx = [
     2 2 2 1 1 1];  % index of the context for each scan run (top row for cb=1 subs, bottom row for cb=2 subs)
 
 
-runs = [1:6]; % scan runs to model (if not using all scan runs for some reason, 
+runs = [1:6]; % scan runs to model (if not using all scan runs for some reason,
 % this should be the only line necessary to edit, eg, runs = [1 2 3 5]
 
 nVols = 326; % # of volumes in each included scan run
@@ -33,23 +33,18 @@ TR = 1.5; % scan repetition time
 
 irf = 'can'; % either 'can' for spm's canonical hrf function or 'fir' for using a finite impulse response function
 
+
+
 % stims of interest to create regressor time series for
-stims = {'cuepair1',...         % cuepair1 - cue pair for gain trials
-    'cuepair2',...              % cuepair2 - cue pair for loss trials
-    'gain+1',...                % gain+1 - win outcomes
-    'gain0',...                 % gain0 - nothing outcomes for gain trials
-    'loss-1',...                % loss-1 - loss outcomes
-    'loss0',...                 % loss0 - nothing outcomes for loss trials
-    'contextevent',...          % contextevent - neutral or shock cue depending on context
-    'shock'};                   % shock - shock delivery
-
-
-% stims = {'gain+1',...                % gain+1 - win outcomes
+% stims = {'cuepair1',...         % cuepair1 - cue pair for gain trials
+%     'cuepair2',...              % cuepair2 - cue pair for loss trials
+%     'gain+1',...                % gain+1 - win outcomes
 %     'gain0',...                 % gain0 - nothing outcomes for gain trials
 %     'loss-1',...                % loss-1 - loss outcomes
 %     'loss0',...                 % loss0 - nothing outcomes for loss trials
 %     'contextevent',...          % contextevent - neutral or shock cue depending on context
 %     'shock'};                   % shock - shock delivery
+stims = {'gain','loss'};         % gain outcome
 
 
 out_suffix = '_runALL';
@@ -64,7 +59,7 @@ if ~isequal(numel(runs),numel(vol1Idx))
     error('runs and vol1Idx vectors must be equal length');
 end
 
-
+s=1
 for s=1:numel(subjs)
     
     subj = subjs{s};
@@ -92,7 +87,7 @@ for s=1:numel(subjs)
             
             case 'shock' % create 1 shock regressor across contexts
                 
-%                 % run loop
+                %                 % run loop
                 out_reg = zeros(nVols.*numel(runs),1);
                 for r = 1:numel(runs)
                     reg = glm_fmri_createRegs_SA2(subj, this_stim, irf, runs(r), nVols,TR);
@@ -119,6 +114,46 @@ for s=1:numel(subjs)
                 outFName = [this_stim '_' irf out_suffix];
                 dlmwrite([expPaths.regs, outFName], out_reg); % save out reg time series
                 
+            case {'gain','loss'}  % create separate regressor time series for each cue pair set
+                
+                % mean regressor for gain or loss outcomes
+                for c = 1:numel(contexts)
+                    
+                    run_idx = find(strcmp(subj_context,contexts{c})); % idx of the runs to model that were under this context (base or stress)
+                    
+                    % run loop
+                    out_reg = zeros(nVols.*numel(runs),1);  % regressor time series for base or stress runs
+                    for r = run_idx
+                        run = runs(r)
+                        reg = glm_fmri_createRegs_SA2(subj, this_stim, irf, runs(r), nVols,TR);
+                        out_reg(vol1Idx(r):vol1Idx(r)+nVols-1,1:size(reg,2)) = reg;
+                    end % runs
+                    
+                    outFName = [this_stim '_' contexts{c} '_' irf out_suffix];
+                    dlmwrite([expPaths.regs, outFName], out_reg); % save out reg time series
+                    
+                end % contexts
+                
+                % outcome regressor modulated by outcome
+                % for gains, this is +1 for win and -1 for nothing;
+                % for losses, this is +1 for nothing and -1 for losing
+                for c = 1:numel(contexts)
+                    
+                    run_idx = find(strcmp(subj_context,contexts{c})); % idx of the runs to model that were under this context (base or stress)
+                    
+                    % run loop
+                    out_reg = zeros(nVols.*numel(runs),1);  % regressor time series for base or stress runs
+                    for r = run_idx
+                        
+                        reg = glm_fmri_createRegs_SA2_param_gain_loss(subj, this_stim, irf, runs(r), nVols, TR);
+                        out_reg(vol1Idx(r):vol1Idx(r)+nVols-1,1:size(reg,2)) = reg;
+                    end % runs
+                    
+                    outFName = [this_stim '_param_' contexts{c} '_' irf out_suffix];
+                    dlmwrite([expPaths.regs, outFName], out_reg); % save out reg time series
+                    
+                end % contexts
+                
                 
             otherwise   % create a separate regressor for base and stress contexts
                 
@@ -129,11 +164,13 @@ for s=1:numel(subjs)
                     
                     % run loop
                     out_reg = zeros(nVols.*numel(runs),1);  % regressor time series for base or stress runs
+                    
                     for r = run_idx
+                        
                         reg = glm_fmri_createRegs_SA2(subj, this_stim, irf, runs(r), nVols,TR);
                         out_reg(vol1Idx(r):vol1Idx(r)+nVols-1,1:size(reg,2)) = reg;
                     end % runs
-             
+                    
                     outFName = [this_stim '_' contexts{c} '_' irf out_suffix];
                     dlmwrite([expPaths.regs, outFName], out_reg); % save out reg time series
                     
@@ -142,7 +179,7 @@ for s=1:numel(subjs)
                 
         end % case this_stim
         %     figure;  imagesc(out_reg);  colormap(gray);  title(['subject: ' subj outFName])
-    
+        
     end % stims
     
     fprintf('done.\n');

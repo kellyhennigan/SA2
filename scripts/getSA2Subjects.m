@@ -5,23 +5,23 @@ function [subjs,CB] = getSA2Subjects(subgroup)
 % subjects 21 and 29 didn't learn
 
 % 9 - didn't get >55% correct for gains and/or losses
-% 10 - good; scaling data now, mask is made
-% 11 - good (on mt-tam); scaling data now 
+% 10 - good; 
+% 11 - good 
 % 12 - didn't get >55% correct for gains and/or losses
-% 14 - good (on mt-tam)
-% 15 - good (on mt-tam)
+% 14 - good 
+% 15 - good 
 % 16 - didn't get >55% correct for gains and/or losses; fell asleep a
        % little, crazy head movement
 % 17 - fmri data missing from later runs
-% 18 - good, on xhd
-% 19 - good, on xhd
+% 18 - good
+% 19 - good
 % 20 - didn't get >55% correct for gains and/or losses
 % 21 - didn't get >55% correct for gains and/or losses
-% 23 - ready for glm fit
-% 24 - good, on xhd almost ready for glm, just needs gzip on func data niis
-% 25 - good, on xhd, shuold be good in some minutes 
+% 23 - good
+% 24 - good
+% 25 - good
 % 26 - preprocessing messed up for runs 3-5; on mt-tam
-% 27 - good, on mt-tam
+% 27 - good
 % 28 - fmri data missing from later runs
 % 29 - didn't learn but processing anyway 
 % 

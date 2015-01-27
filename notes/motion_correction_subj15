@@ -1,0 +1,42 @@
+alignment notes 
+
+for subject 15, since runs 4-6 were run on different days, do this for motion correction: 
+
+# align cal1 > ref1 and cal4 > ref4
+3dvolreg -base ref1.nii.gz -zpad 4 -prefix rcal1 cal1.nii.gz
+3dvolreg -base ref4.nii.gz -zpad 4 -prefix rcal4 cal4.nii.gz
+
+# align cal4 > cal1
+align_epi_anat.py -dset1 rcal1+orig -dset2 rcal4+orig -dset2to1 -big_move -partial_coverage -dset1_strip 3dAutomask -dset2_strip 3dAutomask -volreg_method 3dvolreg
+
+# motion correct runs 1-3 > ref1 
+3dvolreg -base ref1.nii.gz -zpad 4 -dfile vr_run1.1D -prefix raorun1 aorun1+orig.
+3dvolreg -base ref1.nii.gz -zpad 4 -dfile vr_run2.1D -prefix raorun2 aorun2+orig.
+3dvolreg -base ref1.nii.gz -zpad 4 -dfile vr_run3.1D -prefix raorun3 aorun3+orig.
+
+
+# motion correct runs 4-6 > ref4; save out 1dmatrix for runs 4-6 but don't save our mc data
+**NOTE: it seems for some unknown reason important that the string given for -1Dmatrix_save doesn't end with a '.1D', 
+so that 'aff12.1D' is appended to the end of the name (the next call to cat_matvec only seems to work if the file ends in 'aff12.1D'
+
+3dvolreg -base ref4.nii.gz -zpad 4 -dfile vr_run4.1D -1Dmatrix_save x_ref4_to_run4.1D -prefix NULL aorun4+orig.
+3dvolreg -base ref4.nii.gz -zpad 4 -dfile vr_run5.1D -1Dmatrix_save x_ref4_to_run5.1D -prefix NULL aorun5+orig.
+3dvolreg -base ref4.nii.gz -zpad 4 -dfile vr_run6.1D -1Dmatrix_save x_ref4_to_run6.1D -prefix NULL aorun6+orig.
+
+
+# concatenate matrix for ref4 > ref1 and motion corrected params for runs 4-6
+cat_matvec rcal4_al_mat.aff12.1D x_ref4_to_run4.aff12.1D > x_ref1_to_run4
+cat_matvec rcal4_al_mat.aff12.1D x_ref4_to_run5.aff12.1D > x_ref1_to_run5
+cat_matvec rcal4_al_mat.aff12.1D x_ref4_to_run6.aff12.1D > x_ref1_to_run6
+
+
+# xform runs 4-6 to be aligned with ref1
+3dAllineate -master ref1.nii.gz -1Dmatrix_apply x_ref1_to_run4 -input aorun4+orig. -final quintic -prefix raorun4
+3dAllineate -master ref1.nii.gz -1Dmatrix_apply x_ref1_to_run5 -input aorun5+orig. -final quintic -prefix raorun5
+3dAllineate -master ref1.nii.gz -1Dmatrix_apply x_ref1_to_run6 -input aorun6+orig. -final quintic -prefix raorun6
+
+
+# compare this volume to ref1 volume: 
+3dTcat -prefix mc_run4_vol1 raorun4+orig.[0]
+
+

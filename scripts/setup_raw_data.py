@@ -165,10 +165,6 @@ os.system(cmd)
 cmd = "nifti_tool -cbl -prefix cal4.nii.gz -infiles cal_run4.nii.gz[1]"
 os.system(cmd)			
 
-# move ref files to func_proc dir
-cmd = 'mv ref*nii.gz cal1.nii.gz cal4.nii.gz '+pp_dir					
-os.system(cmd)
-
 
 # separate the t2w and pd volumes 
 cmd = "nifti_tool -cbl -prefix t2.nii.gz -infiles t2pd.nii.gz[0]"
@@ -176,5 +172,14 @@ os.system(cmd)
 cmd = "nifti_tool -cbl -prefix pd.nii.gz -infiles t2pd.nii.gz[1]"
 os.system(cmd)	
 
+
+# move ref, cal, t2, and pd files to func_proc dir
+cmd = 'mv ref*nii.gz cal1.nii.gz cal4.nii.gz t2.nii.gz pd.nii.gz '+pp_dir					
+os.system(cmd)
+
+
+# copy t1 to func_proc dir 
+cmd = 'cp t1.nii.gz '+pp_dir					
+os.system(cmd)
 
 

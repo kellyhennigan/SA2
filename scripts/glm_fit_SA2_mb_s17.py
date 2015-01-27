@@ -1,4 +1,4 @@
-#!/usr/bin/python
+ #!/usr/bin/python
 
 import os,sys
 
@@ -6,12 +6,13 @@ import os,sys
 ##################### fit glm using 3dDeconvolve #####################################################################
 # EDIT AS NEEDED:
 
-#data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
-data_dir = '/home/hennigan/SA2/data/'	
+data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
+#data_dir = '/home/hennigan/SA2/data/'	
+#data_dir = '/home/kelly/SA2/data/'
 
-subjects = ['9']						# subject (string) to process
+subjects = ['17']			# subject (string) to process
 
-out_str = 'glm1'					# string for output files
+out_str = 'glm_mb'					# string for output files
 
 ##########################################################################################
 
@@ -20,15 +21,15 @@ for subject in subjects:
 
 	print '********** GLM FITTING FOR SUBJECT '+subject+' **********'
 
-	out_str = subject+'_'+out_str
+	this_out_str = subject+'_'+out_str
 
 	# define subject-specific directories
 	subj_dir = data_dir+str(subject) # subject dir
 	pp_dir = subj_dir+'/func_proc/'	 # func_proc dir
 	res_dir = subj_dir+'/results/'	 # results dir
-	# if not os.path.exists(res_dir):
-# 		os.makedirs(res_dir)
-# 	
+	if not os.path.exists(res_dir):
+		os.makedirs(res_dir)
+
 	os.chdir(subj_dir) 				 # cd to subj directory
 	cdir = os.getcwd()
 	print 'Current working directory: '+cdir
@@ -93,11 +94,12 @@ for subject in subjects:
 
 	cmd = ('3dDeconvolve '
 		#'-nodata 1956 1.5 '				# nodata option - comment this out if data is provided as -input
-		#'-input func_proc/pp_run1+tlrc. func_proc/pp_run2+tlrc. func_proc/pp_run3+tlrc. func_proc/pp_run4+tlrc. func_proc/pp_run5+tlrc. func_proc/pp_run6+tlrc. '
-		'-input1D func_proc/vox_ts '	
-		'-jobs 4 '					# split up into this many sub-processes if using a multi CPU machine 	
-		'-xjpeg '+res_dir+out_str+'Xmat ' 			# saves out an image of the design matrix as filename
-		'-mask func_proc/func_mask+tlrc. '			# or -automask
+		'-input func_proc/pp_run1+tlrc. func_proc/pp_run2+tlrc. func_proc/pp_run3+tlrc. func_proc/pp_run4+tlrc. '
+		#'-input1D func_proc/vox_ts '	
+		'-jobs 2 '					# split up into this many sub-processes if using a multi CPU machine 	
+		'-xjpeg '+res_dir+this_out_str+'Xmat ' 			# saves out an image of the design matrix as filename
+		#'-mask func_proc/func_mask+tlrc. '			# or -automask
+		'-mask '+data_dir+'ROIs/tlrc_mb_cube_mask.nii.gz '		
 		'-polort 4 '					# number of baseline regressors per run
 		'-dmbase '						# de-mean baseline regressors
 		'-xout ' 						# writes out the design matrix to the screen
@@ -113,11 +115,11 @@ for subject in subjects:
 		'-glt_label 8 loss_param_base-stress -gltsym "SYM: +loss_param_base -loss_param_stress " '
 		'-glt_label 9 loss_PE_base-stress -gltsym "SYM: +loss_PE_base -loss_PE_stress " '
 		'-glt_label 10 cuepairs -gltsym "SYM: +cuepair1a +cuepair1b +cuepair1c +cuepair1d +cuepair1e +cuepair1f +cuepair2a +cuepair2b +cuepair2c +cuepair2d +cuepair2e +cuepair2f " '
-# 		'-errts '+res_dir+out_str+'_errts ' 			# to save out the residual time series
+# 		'-errts '+res_dir+this_out_str+'_errts ' 			# to save out the residual time series
  		'-tout ' 					# output the partial and full model F
  		'-rout ' 					# output the partial and full model R2
- 		'-bucket '+res_dir+out_str+' ' 			# save out all info to filename w/prefix
- 		'-cbucket '+res_dir+out_str+'_B ') 		# save out only regressor coefficients to filename w/prefix
+ 		'-bucket '+res_dir+this_out_str+' ' 			# save out all info to filename w/prefix
+ 		'-cbucket '+res_dir+this_out_str+'_B ') 		# save out only regressor coefficients to filename w/prefix
  
  
 # #############

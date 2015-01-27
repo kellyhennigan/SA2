@@ -3,49 +3,49 @@
 
 # scratch pad for python commands
 
-import os,sys,socket
-
-
-hostname = socket.gethostname()
-print "Host name:", hostname
+import os,sys
 
 	
 
 # set up study-specific directories and file names, etc.
-data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
+#data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
 #data_dir = '/home/hennigan/SA2/data/'	
-ref_file = 'func_ref_vol.nii.gz'  	 		# reference volume filepath (must be in subject's func_proc directory)
-mc_str = 'vr_run'							# string for mc_params files
-smooth_mm = 3 								# fwhm gaussian kernel to use for smoothing (in mm)
+data_dir = '/home/kelly/SA2/data/'
+
 
 
 # specify subjects and scan runs
-subjects = ['15'] # subjects to process
-runs = [3] # scan runs to process
+subjects = ['9','10','11','12','14','15','16','17','18','19','20','21','23','24','25','26','27','28','29'] # subjects to process
+# subjects = ['9','10','11','12','14','15','16','17','18','19','20','21','23','24','25','26','27','28','29'] # subjects to process
 
 
-# now loop through subjects, clusters and bricks to get data
+# cd to data dir
 os.chdir(data_dir)
 #cdir = os.getcwd()
 #print 'Current working directory: '+cdir
-#os.rename('testfile','../../testfile')
+
 
 for subject in subjects:
 
-	this_dir = data_dir+'/'+subject+'/'+'raw/' # this subject's data dir
+	print 'WORKING ON SUBJECT '+subject
+	
+	this_dir = data_dir+subject+'/'+'results/' # this subject's data dir
 	os.chdir(this_dir)
-	cdir = os.getcwd()
-	print 'Current working directory: '+cdir
+	
+	cmd = 'cp * ../../results'
+	os.system(cmd)
+	
+	
 	
 	# Open a file
-	fo = open("caldisp.1D", "r+")
-	lines = fo.readlines()	
-	print lines[2]
-	position = fo.seek(2,0)
-	str = fo.read(10);
-	print "Read String is : ", str
-	# Close opend file
-	fo.close()
+# 	fo = open("caldisp.1D", "r+")
+# 	lines = fo.readlines()	
+# 	print lines[2]
+# 	position = fo.seek(2,0)
+# 	str = fo.read(10);
+# 	print "Read String is : ", str
+# 	# Close opend file
+# 	fo.close()
 
 
 
