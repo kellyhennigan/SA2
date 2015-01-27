@@ -46,6 +46,10 @@ for subject in subjects:
 # 	print "Read String is : ", str
 # 	# Close opend file
 # 	fo.close()
+<<<<<<< HEAD
+=======
+
+>>>>>>> 16c25c6ec9c1190a3b298fb8e9f34a7a31a8fee8
 
 
 

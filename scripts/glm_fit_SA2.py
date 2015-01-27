@@ -7,11 +7,18 @@ import os,sys
 # EDIT AS NEEDED:
 
 #data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
-data_dir = '/home/hennigan/SA2/data/'	
+#data_dir = '/home/hennigan/SA2/data/'	
+data_dir = '/home/kelly/SA2/data/'	
 
+<<<<<<< HEAD
 subjects = ['9']						# subject (string) to process
 
 out_str = 'glm1'					# string for output files
+=======
+subjects = ['11']		# subject (string) to process
+
+out_str = 'glm1'		# string for output files
+>>>>>>> 16c25c6ec9c1190a3b298fb8e9f34a7a31a8fee8
 
 ##########################################################################################
 
@@ -93,9 +100,15 @@ for subject in subjects:
 
 	cmd = ('3dDeconvolve '
 		#'-nodata 1956 1.5 '				# nodata option - comment this out if data is provided as -input
+<<<<<<< HEAD
 		#'-input func_proc/pp_run1+tlrc. func_proc/pp_run2+tlrc. func_proc/pp_run3+tlrc. func_proc/pp_run4+tlrc. func_proc/pp_run5+tlrc. func_proc/pp_run6+tlrc. '
 		'-input1D func_proc/vox_ts '	
 		'-jobs 4 '					# split up into this many sub-processes if using a multi CPU machine 	
+=======
+		'-input func_proc/pp_run1+tlrc. func_proc/pp_run2+tlrc. func_proc/pp_run3+tlrc. func_proc/pp_run4+tlrc. func_proc/pp_run5+tlrc. func_proc/pp_run6+tlrc. '
+		#'-input1D func_proc/vox_ts '	
+		'-jobs 2 '					# split up into this many sub-processes if using a multi CPU machine 	
+>>>>>>> 16c25c6ec9c1190a3b298fb8e9f34a7a31a8fee8
 		'-xjpeg '+res_dir+out_str+'Xmat ' 			# saves out an image of the design matrix as filename
 		'-mask func_proc/func_mask+tlrc. '			# or -automask
 		'-polort 4 '					# number of baseline regressors per run
@@ -130,3 +143,7 @@ for subject in subjects:
 
 print 'finished subject loop'
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 16c25c6ec9c1190a3b298fb8e9f34a7a31a8fee8
