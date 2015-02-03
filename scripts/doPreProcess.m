@@ -39,8 +39,9 @@ numinchunk = 30;      % max images in chunk for movie
 
 %% process data
 
-% for r = 1:numel(inFiles); % which nii file to load
-    for r=1
+for r = 1:numel(inFiles); % which nii file to load
+
+    fprintf(['\n\n\nPROCESSING RUN ' num2str(r) ' FOR SUBJECT ' subj '\n\n']);
         
     fprintf('load EPI data...');
     

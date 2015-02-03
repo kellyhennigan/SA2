@@ -31,7 +31,7 @@ subjs = getSA2Subjects();
 %
 for i=1:numel(a)
     for j = 1:numel(B)
-        [nll(i,j),~] = fitQLearningMod([a(i),B(j)],choice,outcomes);
+        [nll(i,j),~] = fitQLearningMod([a(i),B(j)],choices,outcomes);
     end
 end
 

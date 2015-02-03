@@ -24,6 +24,7 @@ function [nll,d,Pc1] = fitQLearningMod(p,choice,reward)
 %% SETUP
 
 a = p(1); % learning rate parameter
+
 B = p(2); % inverse temperature parameter for softmax 
 
 nC = 2; % # of cue options 

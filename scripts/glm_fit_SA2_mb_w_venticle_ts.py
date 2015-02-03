@@ -7,16 +7,17 @@ import os,sys
 # EDIT AS NEEDED:
 
 #data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
-data_dir = '/home/hennigan/SA2/data/'	
-#data_dir = '/home/kelly/SA2/data/'
+#data_dir = '/home/hennigan/SA2/data/'	
+data_dir = '/home/kelly/SA2/data/'
 
 subjects = ['9']			# subject (string) to process
 
-out_str = 'glm_wb'					# string for output files
+out_str = 'glm_mb2'					# string for output files
 
-out_dir = data_dir+'results_wb'  	# directory for out files 
+out_dir = data_dir+'results_mb2/'  	# directory for out files 
 
 ##########################################################################################
+
 
 # make out directory if its not already defined
 if not os.path.exists(out_dir):
@@ -71,7 +72,9 @@ for subject in subjects:
 		'"regs/cuepair2_can_runALL[2]"',
 		'"regs/cuepair2_can_runALL[3]"',
 		'"regs/cuepair2_can_runALL[4]"',
-		'"regs/cuepair2_can_runALL[5]"',
+		'"regs/cuepair2_can_runALL[5]"']
+		
+	stim_base_files = ['func_proc/ventricle_ts',
 		'"regs/motion_z_runALL[0]"',
 		'"regs/motion_z_runALL[1]"',
 		'"regs/motion_z_runALL[2]"',
@@ -87,15 +90,20 @@ for subject in subjects:
 		'neutralcue','shockcue','shock',
 		'cuepair1a','cuepair1b','cuepair1c','cuepair1d','cuepair1e','cuepair1f',
 		'cuepair2a','cuepair2b','cuepair2c','cuepair2d','cuepair2e','cuepair2f',
-		'Roll','Pitch','Yaw','dS','dL','dP']
+		'ventricle_ts','Roll','Pitch','Yaw','dS','dL','dP']
+
 
 	
-	stim_str = '-num_stimts '+str(len(stim_files))+' '  # string defining the stim files and labels
+	stim_str = '-num_stimts '+str(len(stim_labels))+' '  # string defining the stim files and labels
 	
 	i=0  # stim counter
 	
 	for stim_file in stim_files:
 	 	stim_str = stim_str + '-stim_file '+str(i+1)+' '+stim_file+' -stim_label '+str(i+1)+' '+stim_labels[i]+' '
+	 	i=i+1
+	
+	for stim_base_file in stim_base_files:
+	 	stim_str = stim_str + '-stim_file '+str(i+1)+' '+stim_base_file+' -stim_base '+str(i+1)+' -stim_label '+str(i+1)+' '+stim_labels[i]+' '
 	 	i=i+1
 	
 
@@ -106,7 +114,8 @@ for subject in subjects:
 		'-jobs 2 '					# split up into this many sub-processes if using a multi CPU machine 	
 		'-xjpeg '+out_dir+this_out_str+'Xmat ' 			# saves out an image of the design matrix as filename
 		#'-mask func_proc/func_mask+tlrc. '			# or -automask
-		'-mask '+data_dir+'ROIs/group_mask+tlrc '		
+		#'-mask '+data_dir+'ROIs/group_mask+tlrc '		
+		'-mask '+data_dir+'ROIs/tlrc_mb_cube_mask.nii.gz '		
 		'-polort 4 '					# number of baseline regressors per run
 		'-dmbase '						# de-mean baseline regressors
 		'-xout ' 						# writes out the design matrix to the screen
@@ -142,4 +151,3 @@ for subject in subjects:
 	print '********** DONE WITH SUBJECT '+subject+' **********'
 
 print 'finished subject loop'
-

@@ -29,7 +29,7 @@
 clear all
 close all
 
-subj = '18';
+subj = '24';
 
 p=getSA2Paths(subj);
 
@@ -65,7 +65,7 @@ doOmit1stVols = 1; % omit some of the 1st vols of each run?
 
 doComputeTSNR = 1; % compute temporal SNR?
 
-doCorrectSliceTiming = 1; % correct for differences in slice acquisition times?
+doCorrectSliceTiming = 0; % correct for differences in slice acquisition times?
 
 doCorrectMotion = 0; % correct for head movement?
 
@@ -91,10 +91,17 @@ doConcatRuns = 0; % concatanate across functional runs?
 if doQCFigs
     
     % where should i save figures to?
-    figuredir = fullfile(outDir,'figures');
+%     figuredir = fullfile(outDir,'figures');
+%     if ~exist(figuredir,'dir')
+%         mkdir(figuredir)
+%     end
+     
+% where should i save figures to?
+    figuredir = fullfile(p.data,'QCfigs',subj);
     if ~exist(figuredir,'dir')
         mkdir(figuredir)
     end
+    
     
 else
     figuredir = [];

@@ -31,9 +31,9 @@ vol1Idx = 1:nVols:nVols*numel(runs); % index of the 1st volume in each scan run
 
 TR = 1.5; % scan repetition time
 
-stim = 'loss';  %
+stim = 'gain';  %
 
-pstr = 'outc'; % 'PE', '+PE', '-PE','sPE', or 'outc'
+pstr = '-PE'; % 'PE', '+PE', '-PE','sPE', or 'outc'
 
 
 out_suffix = '_can_runALL';

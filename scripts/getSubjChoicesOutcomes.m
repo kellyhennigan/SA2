@@ -37,7 +37,7 @@ elseif strcmpi(cond, 'loss')
 end
 
 % if context isn't specified, then return data from both contexts 
-if notDefined('context')
+if notDefined('context') || strcmpi(context,'both')
     context = '*';
 end
 if strcmpi(context, 'base') 

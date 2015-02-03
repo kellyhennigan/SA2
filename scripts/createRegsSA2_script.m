@@ -44,7 +44,7 @@ irf = 'can'; % either 'can' for spm's canonical hrf function or 'fir' for using 
 %     'loss0',...                 % loss0 - nothing outcomes for loss trials
 %     'contextevent',...          % contextevent - neutral or shock cue depending on context
 %     'shock'};                   % shock - shock delivery
-stims = {'gain','loss'};         % gain outcome
+stims = {'gain0','gain+1','loss0','loss-1'};         % gain outcome
 
 
 out_suffix = '_runALL';

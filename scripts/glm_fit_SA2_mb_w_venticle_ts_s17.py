@@ -6,17 +6,18 @@ import os,sys
 ##################### fit glm using 3dDeconvolve #####################################################################
 # EDIT AS NEEDED:
 
-#data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
-data_dir = '/home/hennigan/SA2/data/'	
+data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
+#data_dir = '/home/hennigan/SA2/data/'	
 #data_dir = '/home/kelly/SA2/data/'
 
-subjects = ['9']			# subject (string) to process
+subjects = ['17']			# subject (string) to process
 
-out_str = 'glm_wb'					# string for output files
+out_str = 'glm_mb2'					# string for output files
 
-out_dir = data_dir+'results_wb'  	# directory for out files 
+out_dir = data_dir+'results_mb2/'  	# directory for out files 
 
 ##########################################################################################
+
 
 # make out directory if its not already defined
 if not os.path.exists(out_dir):
@@ -64,14 +65,12 @@ for subject in subjects:
 		'"regs/cuepair1_can_runALL[1]"',
 		'"regs/cuepair1_can_runALL[2]"',
 		'"regs/cuepair1_can_runALL[3]"',
-		'"regs/cuepair1_can_runALL[4]"',
-		'"regs/cuepair1_can_runALL[5]"',
 		'"regs/cuepair2_can_runALL[0]"',
 		'"regs/cuepair2_can_runALL[1]"',
 		'"regs/cuepair2_can_runALL[2]"',
-		'"regs/cuepair2_can_runALL[3]"',
-		'"regs/cuepair2_can_runALL[4]"',
-		'"regs/cuepair2_can_runALL[5]"',
+		'"regs/cuepair2_can_runALL[3]"']
+		
+	stim_base_files = ['func_proc/ventricle_ts',
 		'"regs/motion_z_runALL[0]"',
 		'"regs/motion_z_runALL[1]"',
 		'"regs/motion_z_runALL[2]"',
@@ -85,12 +84,13 @@ for subject in subjects:
 		'gain_stress','gain_outc_stress','gain_PE_stress','gain_sPE_stress',
 		'loss_stress','loss_outc_stress','loss_PE_stress','loss_sPE_stress',
 		'neutralcue','shockcue','shock',
-		'cuepair1a','cuepair1b','cuepair1c','cuepair1d','cuepair1e','cuepair1f',
-		'cuepair2a','cuepair2b','cuepair2c','cuepair2d','cuepair2e','cuepair2f',
-		'Roll','Pitch','Yaw','dS','dL','dP']
+		'cuepair1a','cuepair1b','cuepair1c','cuepair1d',
+		'cuepair2a','cuepair2b','cuepair2c','cuepair2d',
+		'ventricle_ts','Roll','Pitch','Yaw','dS','dL','dP']
+
 
 	
-	stim_str = '-num_stimts '+str(len(stim_files))+' '  # string defining the stim files and labels
+	stim_str = '-num_stimts '+str(len(stim_labels))+' '  # string defining the stim files and labels
 	
 	i=0  # stim counter
 	
@@ -98,15 +98,20 @@ for subject in subjects:
 	 	stim_str = stim_str + '-stim_file '+str(i+1)+' '+stim_file+' -stim_label '+str(i+1)+' '+stim_labels[i]+' '
 	 	i=i+1
 	
+	for stim_base_file in stim_base_files:
+	 	stim_str = stim_str + '-stim_file '+str(i+1)+' '+stim_base_file+' -stim_base '+str(i+1)+' -stim_label '+str(i+1)+' '+stim_labels[i]+' '
+	 	i=i+1
+	
 
 	cmd = ('3dDeconvolve '
 		#'-nodata 1956 1.5 '				# nodata option - comment this out if data is provided as -input
-		'-input func_proc/pp_run1+tlrc. func_proc/pp_run2+tlrc. func_proc/pp_run3+tlrc. func_proc/pp_run4+tlrc. func_proc/pp_run5+tlrc. func_proc/pp_run6+tlrc. '
+		'-input func_proc/pp_run1+tlrc. func_proc/pp_run2+tlrc. func_proc/pp_run3+tlrc. func_proc/pp_run4+tlrc. '
 		#'-input1D func_proc/vox_ts '	
 		'-jobs 2 '					# split up into this many sub-processes if using a multi CPU machine 	
 		'-xjpeg '+out_dir+this_out_str+'Xmat ' 			# saves out an image of the design matrix as filename
 		#'-mask func_proc/func_mask+tlrc. '			# or -automask
-		'-mask '+data_dir+'ROIs/group_mask+tlrc '		
+		#'-mask '+data_dir+'ROIs/group_mask+tlrc '		
+		'-mask '+data_dir+'ROIs/tlrc_mb_cube_mask.nii.gz '		
 		'-polort 4 '					# number of baseline regressors per run
 		'-dmbase '						# de-mean baseline regressors
 		'-xout ' 						# writes out the design matrix to the screen
@@ -125,7 +130,7 @@ for subject in subjects:
 		'-glt_label 11 loss_sPE -gltsym "SYM: +loss_sPE_base +loss_sPE_stress " '
 		'-glt_label 12 loss_sPE_base-stress -gltsym "SYM: +loss_sPE_base -loss_sPE_stress " '
 		'-glt_label 13 shockcue-neutralcue -gltsym "SYM: +shockcue -neutralcue" '
-		'-glt_label 14 cue_period -gltsym "SYM: +cuepair1a +cuepair1b +cuepair1c +cuepair1d +cuepair1e +cuepair1f +cuepair2a +cuepair2b +cuepair2c +cuepair2d +cuepair2e +cuepair2f " '
+		'-glt_label 14 cue_period -gltsym "SYM: +cuepair1a +cuepair1b +cuepair1c +cuepair1d +cuepair2a +cuepair2b +cuepair2c +cuepair2d" '
 # 		'-errts '+out_dir+this_out_str+'_errts ' 			# to save out the residual time series
  		'-tout ' 					# output the partial and full model F
  		'-rout ' 					# output the partial and full model R2
@@ -142,4 +147,3 @@ for subject in subjects:
 	print '********** DONE WITH SUBJECT '+subject+' **********'
 
 print 'finished subject loop'
-
