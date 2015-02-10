@@ -76,30 +76,31 @@ print cmd
 os.system(cmd)
 
 
-3drefit -sublabel 0 gain_win-nothing_mean all_t+tlrc.
-3drefit -sublabel 1 gain_win-nothing_T all_t+tlrc.
-3drefit -sublabel 2 gain+RPE_mean all_t+tlrc.
-3drefit -sublabel 3 gain+RPE_T all_t+tlrc.
-3drefit -sublabel 4 gain-RPE_mean all_t+tlrc.
-3drefit -sublabel 5 gain-RPE_T all_t+tlrc.
-3drefit -sublabel 6 gainRPE_mean all_t+tlrc.
-3drefit -sublabel 7 gainRPE_T all_t+tlrc.
-3drefit -sublabel 8 gainSPE_mean all_t+tlrc.
-3drefit -sublabel 9 gainSPE_T all_t+tlrc.
-3drefit -sublabel 10 gain_win-nothing_B-S_mean all_t+tlrc.
-3drefit -sublabel 11 gain_win-nothing_B-S_T all_t+tlrc.
-3drefit -sublabel 12 gain+RPE_B-S_mean all_t+tlrc.
-3drefit -sublabel 13 gain+RPE_B-S_T all_t+tlrc.
-3drefit -sublabel 14 gain-RPE_B-S_mean all_t+tlrc.
-3drefit -sublabel 15 gain-RPE_B-S_T all_t+tlrc.
-3drefit -sublabel 16 gainRPE_B-S_mean all_t+tlrc.
-3drefit -sublabel 17 gainRPE_B-S_T all_t+tlrc.
-3drefit -sublabel 18 gainSPE_B-S_mean all_t+tlrc.
-3drefit -sublabel 19 gainSPE_B-S_T all_t+tlrc.
-3drefit -sublabel 20 shockcue-neutralcue_mean all_t+tlrc.
-3drefit -sublabel 21 shockcue-neutralcue_T all_t+tlrc.
-3drefit -sublabel 22 cue_period_mean all_t+tlrc.
-3drefit -sublabel 23 cue_period_T all_t+tlrc.
+3drefit -sublabel 0 gain_win-nothing_mean all_t_learners+tlrc.
+3drefit -sublabel 1 gain_win-nothing_T all_t_learners+tlrc.
+
+3drefit -sublabel 2 gain+RPE_mean all_t_learners+tlrc.
+3drefit -sublabel 3 gain+RPE_T all_t_learners+tlrc.
+3drefit -sublabel 4 gain-RPE_mean all_t_learners+tlrc.
+3drefit -sublabel 5 gain-RPE_T all_t_learners+tlrc.
+3drefit -sublabel 6 gainRPE_mean all_t_learners+tlrc.
+3drefit -sublabel 7 gainRPE_T all_t_learners+tlrc.
+3drefit -sublabel 8 gainSPE_mean all_t_learners+tlrc.
+3drefit -sublabel 9 gainSPE_T all_t_learners+tlrc.
+3drefit -sublabel 10 gain_win-nothing_B-S_mean all_t_learners+tlrc.
+3drefit -sublabel 11 gain_win-nothing_B-S_T all_t_learners+tlrc.
+3drefit -sublabel 12 gain+RPE_B-S_mean all_t_learners+tlrc.
+3drefit -sublabel 13 gain+RPE_B-S_T all_t_learners+tlrc.
+3drefit -sublabel 14 gain-RPE_B-S_mean all_t_learners+tlrc.
+3drefit -sublabel 15 gain-RPE_B-S_T all_t_learners+tlrc.
+3drefit -sublabel 16 gainRPE_B-S_mean all_t_learners+tlrc.
+3drefit -sublabel 17 gainRPE_B-S_T all_t_learners+tlrc.
+3drefit -sublabel 18 gainSPE_B-S_mean all_t_learners+tlrc.
+3drefit -sublabel 19 gainSPE_B-S_T all_t_learners+tlrc.
+3drefit -sublabel 20 shockcue-neutralcue_mean all_t_learners+tlrc.
+3drefit -sublabel 21 shockcue-neutralcue_T all_t_learners+tlrc.
+3drefit -sublabel 22 cue_period_mean all_t_learners+tlrc.
+3drefit -sublabel 23 cue_period_T all_t_learners+tlrc.
 
 	
 	

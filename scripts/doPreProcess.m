@@ -13,16 +13,19 @@
 % % 1 to do, 0 to not do
 %
 % here are the pre-processing step options:
-% 1) drop the first few volumes of each run (doOmit1stVols) add prefix 'o'
-% 2) slice time correction (doCorrectSliceTiming)           add prefix 'a'
-% 3) motion correction (doCorrectMotion)                    add prefix 'r'
-% 4) fieldmap correction (doCorrectFieldMap)                add prefix 'u'
-% 5) smooth data (doSmooth)                                 add prefix 's'
-% 6) make a binary brain mask (doMask)                      called func_mask
-% 7) convert from raw to % change units (doConvertUnits)    add prefix 'p'
-% 8) concatanate runs (doConcatRuns)                        called __
-% 9) add coreg/normalization option
 
+% 1) doDiary - record every step that occurs? 
+% 2) doQAFigs - save out quality assurance figures? 
+% 3) doOmit1stVols - drop the first few volumes of eachrun? add prefix 'o'
+% 4) doCorrectSliceTiming - do slice time correction        add prefix 'a'
+% 5) doCorrectFieldMap - correct for distorted field map    add prefix 'u'
+% 6) doCorrectMotion - correct for head movement            add prefix 'r'
+% 7) doSmooth - smooth data                                 add prefix 's'
+% 8) doMask - make a binary brain mask (doMask)             called func_mask
+% 9) doConvertUnits - convert from raw to % change units    add prefix 'p'
+% 10) doConcatRuns - concatanate runs                        called __
+
+% the options that add a prefix are the ones that actually effect the data
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,6 +40,24 @@ numinchunk = 30;      % max images in chunk for movie
 % etc.
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  doDIARY 
+    
+    
+    if doDiary 
+        
+        fprintf(['\n\nstarting diary file ' diaryfile '...']);
+        mkdirquiet(stripfile(diaryfile));
+        diary(diaryfile);
+        
+        fprintf('done.\n');
+        reportmemoryandtime;
+        
+    end
+    
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% process data
 
 for r = 1:numel(inFiles); % which nii file to load
@@ -53,7 +74,7 @@ for r = 1:numel(inFiles); % which nii file to load
     end
     
     % filename to reflect pre-processing performed
-    thisStr = outStrs{r};
+    thisStr = outStrs{r};  % base string for outname (e.g., 'run1')
     nii.fname = fullfile(outDir,[thisStr '.nii.gz']);
     
     
@@ -67,14 +88,19 @@ for r = 1:numel(inFiles); % which nii file to load
     
     if doOmit1stVols
         
+        out_prefix = 'o'; % add this to outfile to indicate this step performed
+        
         fprintf(['omitting 1st ' num2str(omitNVols) ' vols...']);
+       
+        % do it
         nii.data(:,:,:,1:omitNVols) = [];
         
         % update filename to reflect pre-processing performed
-        thisStr = ['o' thisStr];
+        thisStr = [out_prefix thisStr];
         nii.fname = fullfile(outDir,[thisStr '.nii.gz']);
-        %     writeFileNifti(nii); % save out this stage of processing
-        
+        if saveIntSteps % save out intermediate processing steps?
+            writeFileNifti(nii); 
+        end
         
         fprintf('done.\n');
         reportmemoryandtime;
@@ -83,11 +109,11 @@ for r = 1:numel(inFiles); % which nii file to load
     
     
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%  QC FIGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  QA FIGS
     
     
-    if doQCFigs
+    if doQAFigs
         
         fprintf('computing & writing out temporal SNR estimates...');
         
@@ -112,47 +138,25 @@ for r = 1:numel(inFiles); % which nii file to load
     
     if doCorrectSliceTiming
         
+       out_prefix = 'a'; % add this to outfile to indicate this step performed
+        
         fprintf('correcting for differences in slice acquisition times...');
         
+        % do it
         nii.data = correctSliceTiming(nii.data,sliceOrder,mux);
         
-        % update filename to reflect pre-processing performed
-        thisStr = ['a' thisStr];
+         % update filename to reflect pre-processing performed
+        thisStr = [out_prefix thisStr];
         nii.fname = fullfile(outDir,[thisStr '.nii.gz']);
-        writeFileNifti(nii); % save out this stage of processing
-        
-        fprintf('done.\n');
-        reportmemoryandtime;
-        
-    end
-    
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %% MOTION CORRECTION
-    
-    
-    if doCorrectMotion
-        
-        fprintf('correcting for motion...');
-        
-        switch lower(mcMethod)
-            
-            case 'afni'
-                
-                % make sure the input data has been written out as a file
-                if ~exist(nii.fname,'file')
-                    writeFileNifti(nii)
-                end
-                
-                thisStr = ['r' thisStr];   % define file string that describes the stage of preprocessing
-                [nii,mparams]=afniMotionCorrect(refFilePath,nii.fname,thisStr,['vr_run' num2str(r) '.1D'],outDir);
-                
+        if saveIntSteps % save out intermediate processing steps?
+            writeFileNifti(nii); 
         end
         
-        
         fprintf('done.\n');
         reportmemoryandtime;
         
     end
+    
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% FIELDMAP CORRECTION
@@ -160,7 +164,14 @@ for r = 1:numel(inFiles); % which nii file to load
 
 if doCorrectFieldMap
     
-    %
+    out_prefix = 'u'; % add this to outfile to indicate this step performed
+        
+        fprintf('correcting fieldmap distortions...');
+        
+        % do it
+       nii.data = correctFieldMap();
+       
+         %
     % %     % load fieldmap data
     % fprintf('loading fieldmap data...');
     %
@@ -186,9 +197,92 @@ if doCorrectFieldMap
     % pm_defs = [9.1, 11.372, 0, 19.1, -1, 1, 1]];
     %
     % VDM=FieldMap_preprocess(inDir,epi_dir,[9.1,11.372,0,pm_defs,sessname)
+        
+         % update filename to reflect pre-processing performed
+        thisStr = [out_prefix thisStr];
+        nii.fname = fullfile(outDir,[thisStr '.nii.gz']);
+        if saveIntSteps % save out intermediate processing steps?
+            writeFileNifti(nii); 
+        end
+        
+        fprintf('done.\n');
+        reportmemoryandtime;
+        
     
 end
+
     
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% MOTION CORRECTION
+    
+    
+    if doCorrectMotion
+        
+         out_prefix = 'r'; % add this to outfile to indicate this step performed
+     
+        fprintf('correcting for motion...');
+        
+        switch lower(mcMethod)
+            
+            case 'afni'
+                
+                % make sure the input data has been written out as a file
+                if ~exist(nii.fname,'file')
+                    writeFileNifti(nii)
+                end
+                
+                thisStr = [out_prefix thisStr];   % define file string that describes the stage of preprocessing
+                [nii,mparams]=afniMotionCorrect(refFilePath,nii.fname,thisStr,['vr_run' num2str(r) '.1D'],outDir);
+                
+            case 'spm'
+                
+               
+                % do it
+                % write function here
+                
+                
+                % update filename to reflect pre-processing performed
+                thisStr = [out_prefix thisStr];
+                nii.fname = fullfile(outDir,[thisStr '.nii.gz']);
+                if saveIntSteps % save out intermediate processing steps?
+                    writeFileNifti(nii);
+                end
+                
+                
+        end
+        
+        
+        fprintf('done.\n');
+        reportmemoryandtime;
+        
+    end
+    
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% UNDISTORT & MOTION CORRECT IN ONE INTERPOLATION STEP
+    
+    
+    if doFieldMap && doCorrectMotion
+        
+        fprintf('undistorting and motion correcting in one interpolation step...');
+                
+                % do it
+                % write function here
+                
+                
+                % update filename to reflect pre-processing performed
+%                 thisStr = [out_prefix thisStr];
+%                 nii.fname = fullfile(outDir,[thisStr '.nii.gz']);
+                if saveIntSteps % save out intermediate processing steps?
+                    writeFileNifti(nii);
+                end
+                
+                 fprintf('done.\n');
+        reportmemoryandtime;
+                
+    end
+        
+         
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% SMOOTH
@@ -252,6 +346,7 @@ end
     
 end % RUN LOOP
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CONCATENATE RUNS
 
@@ -263,49 +358,14 @@ end % RUN LOOP
 % 3dTcat -prefix all corr_1_cv.nii.gz corr_2_cv.nii.gz corr_3_cv.nii.gz
    end
 
-
-
-
-%% coregister functional and anatomical
-
-% # align T1 to mc_func_vol
-% align_epi_anat.py -anat ../raw/t1.nii.gz -epi mc_func_vol.nii -epi_base 0 -anat2epi -tshift off -partial_coverage -AddEdge
-%
-% mv t1.nii.gz_al_mat.aff12.1D t12func_xform
-% mv t1.nii.gz_al_e2a_only_mat.aff12.1D func2t1_xform
-% mv t1.nii.gz_al.nii.gz c_t1.nii.gz
-
-
-%% 6) normalize anatomical to tlrc
-
-% # normalize coregistered-t1 to tlrc
-% @auto_tlrc -base /Users/Kelly/SA2/template_brains/TT_icbm452+tlrc. -input c_t1.nii.gz -no_ss
-%
-% produces:
-% c_t1_at.nii file  # t1 in tlrc space
-% c_t1_at.nii_WarpDrive.log  # log file
-% c_t1_at.nii.Xaff12.1D      # xform
-% c_t1_at.Xat.1D		   # another xform
-%
-% %
-% # transform mc_func_vol into tlrc space and check out alignment
-% @auto_tlrc -apar c_t1_at.nii -input mc_func_vol.nii -dxyz 1.6
-%
-%
-% # if alignment looks good, normalize all func data
-% @auto_tlrc -apar c_t1_at.nii -input srarun1+orig -dxyz 1.6
-
-% ______
-
-
-
-
-
-%% make a group mask
-%
-% 3dMean -datum float -prefix mean_mask *mask+tlrc.HEAD
-% 3dcalc -datum byte -prefix group_mask -a mean_mask+tlrc -expr 'step(a-0.75)'
-
+   
+   
+   
+%%
+   if doDiary
+       diary off
+   end
+   
 
 
 

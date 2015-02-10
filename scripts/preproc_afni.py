@@ -7,9 +7,9 @@
 import os,sys
 
 # set up study-specific directories and file names, etc.
-#data_dir = '/Volumes/blackbox/SA2/data'		# experiment main data directory
-data_dir = '/home/hennigan/SA2/data'	
-subjects = ['26','27','29'] # subjects to process
+data_dir = '/Volumes/blackbox/SA2/data'		# experiment main data directory
+#data_dir = '/home/hennigan/SA2/data'	
+subjects = ['24'] # subjects to process
 runs = [1,2,3,4,5,6] 					# scan runs to process
 
 
@@ -31,13 +31,13 @@ if doCorrectSliceTiming:
 	st_file = data_dir+'/slice_acq_times'	# file w/ slice acquisition times
 
 if doCorrectMotion: 
-	ref_file = 'func_ref_vol.nii.gz'	# reference volume filepath (must be in subject's func_proc directory)
+	ref_file = 'ref1.nii.gz'	# reference volume filepath (must be in subject's func_proc directory)
 	mc_str = 'vr_run'					# string for mc_params files
 
 if doSmooth: 
 	smooth_mm = 3 						# fwhm gaussian kernel to use for smoothing (in mm)
 
-if doConcatRuns
+if doConcatRuns:
 	all_mc_str = 'vr_ALL' 				# string to use for concatenated mc params			
 	all_data_str = 'pp_ALL'				# " " concatenated data
 
@@ -119,7 +119,7 @@ for subject in subjects:
 			
 		# if this is the first run, make a binary mask of the smoothed data
 		if r==1:
-			cmd = '3dAutomask -prefix func_mask '+inStr+'+orig'
+			cmd = '3dAutomask -prefix func_mask_r1 '+inStr+'+orig'
 			print cmd
 			os.system(cmd)
 		
@@ -142,7 +142,8 @@ for subject in subjects:
 			mc_files = mc_files+' '+mc_file
 			pp_files = pp_files+' '+inStr+'+orig'
 	
-	
+		# end of run loop
+		
 	if doConcatRuns:	
 		# concatenate mc_param files 
 		cmd = 'cat '+mc_files+' > '+all_mc_str+'.1D'
@@ -160,9 +161,9 @@ for subject in subjects:
 		os.system(cmd)
 	
    		# bet concatenated runs
-		#cmd = '3dAutomask -apply_prefix '+all_data_str+'_bet '+all_data_str+'+orig.'
-		#print cmd
-		#os.system(cmd)
+		cmd = '3dAutomask -apply_prefix '+all_data_str+'_bet '+all_data_str+'+orig.'
+		print cmd
+		os.system(cmd)
 	
 		
 	print 'FINISHED SUBJECT '+subject

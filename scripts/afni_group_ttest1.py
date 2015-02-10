@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 # script to extract some single-subject parameter estimates and perform a simple t-test.
-# "infiles" are assumed to contain results from fitting a glm to individual subject data.  
+# looks for stats files using the in_str +wildcard and performs one sample t-tests on the 
+# volumes identified based on sub_labels.
 
 # Infile names should be in the form of: *_in_str, where * is a 
 # specific subject id that will be included in the out file. 

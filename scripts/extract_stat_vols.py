@@ -102,25 +102,25 @@ if write_out_T==1:
 ## to conduct t-tests on GLT_B vols from res_dir as pwd in terminal: 
 
 	
-# 3dttest++ -prefix all_t -brickwise -setA 9_GLT_B+tlrc. 10_GLT_B+tlrc. 11_GLT_B+tlrc. 12_GLT_B+tlrc. 14_GLT_B+tlrc. 15_GLT_B+tlrc. 16_GLT_B+tlrc. 17_GLT_B+tlrc. 18_GLT_B+tlrc. 19_GLT_B+tlrc. 20_GLT_B+tlrc. 21_GLT_B+tlrc. 23_GLT_B+tlrc. 24_GLT_B+tlrc. 25_GLT_B+tlrc. 26_GLT_B+tlrc. 27_GLT_B+tlrc. 29_GLT_B+tlrc. 
+3dttest++ -prefix all_t -brickwise -setA 9_GLT_B+tlrc. 10_GLT_B+tlrc. 11_GLT_B+tlrc. 12_GLT_B+tlrc. 14_GLT_B+tlrc. 15_GLT_B+tlrc. 16_GLT_B+tlrc. 17_GLT_B+tlrc. 18_GLT_B+tlrc. 19_GLT_B+tlrc. 20_GLT_B+tlrc. 21_GLT_B+tlrc. 23_GLT_B+tlrc. 24_GLT_B+tlrc. 25_GLT_B+tlrc. 26_GLT_B+tlrc. 27_GLT_B+tlrc. 29_GLT_B+tlrc. 
 # 
 # 	
-# 3drefit -sublabel 0 gain_outc_mean all_t+tlrc.
-# 3drefit -sublabel 1 gain_outc_tstat all_t+tlrc.
-# 3drefit -sublabel 2 gain_outc_base-stress_mean all_t+tlrc.
-# 3drefit -sublabel 3 gain_outc_base-stress_tstat all_t+tlrc.
-# 3drefit -sublabel 4 gain_PE_mean_tstat all_t+tlrc.
-# 3drefit -sublabel 5 gain_PE_tstat all_t+tlrc.
-# 3drefit -sublabel 6 gain_PE_base-stress_mean all_t+tlrc.
-# 3drefit -sublabel 7 gain_PE_base-stress_tstat all_t+tlrc.
-# 3drefit -sublabel 8 gain_sPE_mean_tstat all_t+tlrc.
-# 3drefit -sublabel 9 gain_sPE_tstat all_t+tlrc.
-# 3drefit -sublabel 10 gain_sPE_base-stress_mean all_t+tlrc.
-# 3drefit -sublabel 11 gain_sPE_base-stress_tstat all_t+tlrc.
-# 3drefit -sublabel 12 shockcue-neutralcue_mean all_t+tlrc.
-# 3drefit -sublabel 13 shockcue-neutralcue_tstat all_t+tlrc.
-# 3drefit -sublabel 14 cue_period_mean all_t+tlrc.
-# 3drefit -sublabel 15 cue_period_tstat all_t+tlrc.
+3drefit -sublabel 0 gain_outc_mean all_t+tlrc.
+3drefit -sublabel 1 gain_outc_tstat all_t+tlrc.
+3drefit -sublabel 2 gain_outc_base-stress_mean all_t+tlrc.
+3drefit -sublabel 3 gain_outc_base-stress_tstat all_t+tlrc.
+3drefit -sublabel 4 gain_PE_mean_tstat all_t+tlrc.
+3drefit -sublabel 5 gain_PE_tstat all_t+tlrc.
+3drefit -sublabel 6 gain_PE_base-stress_mean all_t+tlrc.
+3drefit -sublabel 7 gain_PE_base-stress_tstat all_t+tlrc.
+3drefit -sublabel 8 gain_sPE_mean_tstat all_t+tlrc.
+3drefit -sublabel 9 gain_sPE_tstat all_t+tlrc.
+3drefit -sublabel 10 gain_sPE_base-stress_mean all_t+tlrc.
+3drefit -sublabel 11 gain_sPE_base-stress_tstat all_t+tlrc.
+3drefit -sublabel 12 shockcue-neutralcue_mean all_t+tlrc.
+3drefit -sublabel 13 shockcue-neutralcue_tstat all_t+tlrc.
+3drefit -sublabel 14 cue_period_mean all_t+tlrc.
+3drefit -sublabel 15 cue_period_tstat all_t+tlrc.
 
 
 	
