@@ -173,7 +173,11 @@ if doCorrectMotion
     % before running this script.
     refFilePath = fullfile(outDir,'ref1.nii.gz');
     
-    mcMethod = 'afni'; % currently, this must be either 'afni' or 'kk_spm'
+     % currently, this must be either 'afni' or 'kk_spm'; note: in order to
+     % do FieldMap correction in the same interpolated step as motion
+     % correction, 'kk_spm' method must be used.
+    mcMethod = 'afni';
+    mcMethod = 'kk_spm'; 
     
     saveCorrectMotion = 1;  % save after this completing this step?
     
