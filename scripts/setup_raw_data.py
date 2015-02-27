@@ -83,7 +83,7 @@ for r in func_runs:
 if t1!=0:
 	filePath = subj_nims_dir+exam_no+'_'+str(t1)+'_1_T1w_9mm_sag/'+exam_no+'_'+str(t1)+'_1.nii.gz'
 	if os.path.exists(filePath):
-		cmd = 'ln -s '+filePath+' t1.nii.gz'
+		cmd = 'ln -s '+filePath+' t1_raw.nii.gz'
 		os.system(cmd)	
 		
 		
