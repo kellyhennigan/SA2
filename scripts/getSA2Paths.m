@@ -21,7 +21,7 @@ if strcmp(cName,'psy-jal-ml.stanford.edu') % lab desktop
 elseif strcmp(cName,'mt-tamalpais')        % mt-tam server
     baseDir = '/home/kelly/SA2';
 elseif strcmp(cName,'cnic2')               % cni server
-    baseDir = '/home/kelly/SA2';
+    baseDir = '/home/hennigan/SA2';
 else                                       % assume it's moxie
     baseDir = '/Users/Kelly/SA2';
 end
