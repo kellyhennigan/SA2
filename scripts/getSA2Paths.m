@@ -23,8 +23,7 @@ elseif strcmp(cName,'mt-tamalpais')        % mt-tam server
 elseif strcmp(cName,'cnic2')               % cni server
     baseDir = '/home/kelly/SA2';
 else                                       % assume it's moxie
-       baseDir = '/Users/Kelly/SA2';
-    end
+    baseDir = '/Users/Kelly/SA2';
 end
 
 
