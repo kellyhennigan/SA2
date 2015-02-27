@@ -34,19 +34,34 @@ all_subjs = {'9','10','11','12','14','15','16','17','18','19','20','21',...
 
 
 % this only includes subjects had learning rate estimates of >.1 when the
-% inverse temperature parameter was fixed at 3.3236 (i.e., excludes
-% subjects 12, 16, 21, and 29)
+% inverse temperature parameter was fixed at 3.3236 for gains and 3.1259
+% for losses (i.e., excludes subjects 12, 16, 21, and 29). 
+
+% All of these 4 subjects had <.1 learning rate for gains and losses, and
+% no other subjects had <.1 learning rate for neither gains nor losses. 
+% 
+% note: subjects 23 and 27 were borderline bad but 
 RL_subjs = {'9','10','11','14','15','17','18','19','20',...
     '23','24','25','26','27','28'};
 
 
-% only subjects for which we have a full functional data set 
-fmri_subjs = {'9','10','11','12','14','15','16','18','19','20','21',...
+% only subjects for which we have a full (or almost full) functional data set 
+fmri_subjs = {'9','10','11','12','14','15','16','17','18','19','20','21',...
     '23','24','25','26','27','29'};
+% note: subj 17 has some data missing 
 
 
 % subjects with good learning and good fmri data 
-best_subjs = {'10','11','14','15','18','19','23','24','25','26'};
+best_subjs = {'9','10','11','14','15','17','18','19','20','23','24','25','26','27'};
+
+
+% subjects that completed the behavioral questionnaires
+q_subjs = {'10','11','12','14','15','16','17','18','19','20','21',...
+    '23','24','25','26','27','28','29','30'};
+
+% subjects that we have dti data for 
+dti_subjs = {'9','10','11','12','15','16','17','18','19','20','21',...
+    '23','24','25','28','29','30'};
 
 
 
@@ -60,6 +75,9 @@ elseif strcmp(subgroup,'fmri')
     subjs = fmri_subjs;
 elseif strcmp(subgroup,'best')
     subjs = best_subjs;
+elseif strcmp(subgroup,'q')
+    subjs = q_subjs;
+
 elseif any(strcmp(num2str(subgroup),all_subjs)) % allow input of a subj num to get the cb code
     subjs = all_subjs(find(strcmpi(num2str(subgroup),all_subjs))); 
 else
@@ -88,7 +106,8 @@ subjCBLookup = [
 26    1
 27    1
 28    1
-29    1];
+29    1
+30    1];
 
 for i=1:numel(subjs)
     CB(i,1) = subjCBLookup(subjCBLookup==str2double(subjs{i}),2);

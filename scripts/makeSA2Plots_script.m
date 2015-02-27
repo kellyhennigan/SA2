@@ -13,8 +13,7 @@ paths=getSA2Paths()
 
 
 % define subjects
-subStr = 'all';
-subjs = getSA2Subjects('all');
+subStr = 'RL'; % 'all', etc.
 
 
 savePlots = 1;
@@ -26,15 +25,17 @@ fSize = 16;
 
 Conds=[1,2]; % gain and loss
 
-cols=getSA2Colors; 
-% cols = [cols(2,:);cols(1,:);cols(3,:);cols(4,:)];
+cols=getSA2Colors(); 
+
+subjs = getSA2Subjects(subStr);
 
 %%  plot of observed and modeled choices
 
-figH = figure; hold on
-set(gca,'fontName',font,'fontSize',fSize)
-set(gca,'box','off');
-set(gcf,'Color','w','InvertHardCopy','off','PaperPositionMode','auto');
+figH = setupFig();
+% figH = figure; hold on
+% set(gca,'fontName',font,'fontSize',fSize)
+% set(gca,'box','off');
+% set(gcf,'Color','w','InvertHardCopy','off','PaperPositionMode','auto');
 
 col_idx = 0; % color index
 
@@ -52,9 +53,11 @@ for cond = 1:numel(Conds)      % gains and losses
     
     choices(choices==2)=0;  % recode choices as 0 and 1 for plotting
     
-    scatter([1:36]',nanmean(choices,2),40,cols(col_idx,:),'filled')
+    col = getSA2Colors(cond,cc); % get color for plotting 
     
-    plot([1:36]',nanmean(choices,2),'color',cols(col_idx,:))
+    scatter([1:36]',nanmean(choices,2),40,col,'filled')
+    
+    plot([1:36]',nanmean(choices,2),'color',col)
     
     plot([1:36]',nanmean(Pc1,2),'color',[.5 .5 .5])
     

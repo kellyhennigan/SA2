@@ -7,14 +7,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% set up
 
-% clear all
-% close all
+clear all
+close all
 
 rand_seed=rng('shuffle'); % initialize random seed generator
 
 
 % get subject subset
-[subjects,cb] = getSA2Subjects('all');
+[subjects,cb] = getSA2Subjects('RL');
 
 
 % which condition? must be either 1/'gain' or 2/'loss'
@@ -28,46 +28,58 @@ contexts = {'base','stress'};
 % otherwise its the best for the whole group
 fix_best_B = 1;
 
-% define parameters and options for fminsearch
-% note: to find best fit for only 1 param while holding the other constant,
-% set the p_min and p_max value for that param to the desired constant
-% % p0 = [rand(1) rand(1).*10];      % initial parameter values
-p0=[.2 3];
-p_min = [0 0];    % min param vals
-p_max = [1 10];    % max param vals
+% get parameters and options for fminsearch
+[p0, p_min, p_max] = getInitRLParams();
 options = optimset('MaxFunEvals',1000,'MaxIter',1000);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% fit learning model
+%% fit learning model for all subs together 
+
+
 
 %%% call to fit model without using cell fun:
 %  [p,nll] = fminsearchbnd(@(p) fitQLearningMod(p, choices, outcomes), p0, p_min, p_max, options); % bounded search
 %  [p,nll] = fminsearch(@(p) fitQLearningMod(p, choices, outcomes), p0, options); % unbound method
 
 
+% if fix_best_B, estimate the best B for both contexts
+if fix_best_B
+    [choices,outcomes]=getSubjChoicesOutcomes(subjects,cond);
+    p_best = fminsearchbnd(@(p) fitQLearningMod(p, choices, outcomes), p0, p_min, p_max, options); % bounded search
+    p_min(2) = p_best(2); p_max(2) = p_best(2);
+end
+    
 for c=1:numel(contexts)
     
     context = contexts{c};
 
     % fit model for all subjects
-    if fix_best_B
-        [choices,outcomes]=getSubjChoicesOutcomes(subjects,cond);
-        p_best = fminsearchbnd(@(p) fitQLearningMod(p, choices, outcomes), p0, p_min, p_max, options); % bounded search
-        p_min(2) = p_best(2); p_max(2) = p_best(2);
-    end
     [choices,outcomes]=getSubjChoicesOutcomes(subjects,cond,context);
     [p_all,nll_all] = fminsearchbnd(@(p) fitQLearningMod(p, choices, outcomes), p0, p_min, p_max, options); % bounded search
     a_all(c) = p_all(1); B_all(c) = p_all(2);
+   
+end % contexts 
+
+
+%% fit for each subject individually 
+
     
+% now fit model for each individual subject
+for i=1:numel(subjects)
     
-    % now fit model for each individual subject
-    for i=1:numel(subjects)
-        if fix_best_B
-            [choices,outcomes]=getSubjChoicesOutcomes(subjects{i},cond);
-            p_best = fminsearchbnd(@(p) fitQLearningMod(p, choices, outcomes), p0, p_min, p_max, options); % bounded search
-            p_min(2) = p_best(2); p_max(2) = p_best(2);
-        end
+    [p0, p_min, p_max] = getInitRLParams(); % reinitialize rl params
+    
+    if fix_best_B
+        [choices,outcomes]=getSubjChoicesOutcomes(subjects{i},cond);
+        p_best = fminsearchbnd(@(p) fitQLearningMod(p, choices, outcomes), p0, p_min, p_max, options); % bounded search
+        p_min(2) = p_best(2); p_max(2) = p_best(2);
+    end
+    
+    for c=1:numel(contexts)
+        
+        context = contexts{c};
+        
         [choices,outcomes]=getSubjChoicesOutcomes(subjects{i},cond,context);
         [p,nll] = fminsearchbnd(@(p) fitQLearningMod(p, choices, outcomes), p0, p_min, p_max, options); % bounded search
         a(i,c) = p(1);  B(i,c) = p(2);
@@ -77,28 +89,27 @@ end
 
 %% plots
 
-fh = setupfig
+fh = setupFig
 
-nplots = numel(contexts);
-cols = getSA2Colors;
-
+cols = getSA2Colors(cond);
 for c=1:numel(contexts)
-     context = contexts{c};
-
-    subplot(1,nplots,c)
-    hist(a(:,c))
-    h = findobj(gca,'Type','patch');
-    set(h,'FaceColor',cols(1,:),'EdgeColor','w')
-    title(['subject learning rates for ' cond ' trials w/fixed B param'])
-    xlabel(context)
-
+    context = contexts{c};
+    h = histogram(a(:,c),numel(subjects))
+    set(h,'FaceColor',cols(c,:),'EdgeColor','w')
 end
+tStr = ['subject learning rates for ' cond ' trials'];
+if fix_best_B
+    tStr = [tStr ' w/fixed B across contexts']
+end
+title(tStr)
+legend(contexts); legend('location','best'); legend('boxoff')
+
+pa=getSA2Paths();
+cd(pa.figures); cd behavior;
+saveas(gcf,['RL_subj_' cond '.pdf'],'pdf')
+
     
-    
-    
-    
-    
-    
+ 
     
     
     

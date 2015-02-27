@@ -20,12 +20,10 @@ if strcmp(cName,'psy-jal-ml.stanford.edu') % lab desktop
     baseDir = '/Users/kelly/SA2';
 elseif strcmp(cName,'mt-tamalpais')        % mt-tam server
     baseDir = '/home/kelly/SA2';
-else                                       % assume it's laptop Pluck
-    
-    if exist('/Volumes/blackbox/SA2','dir') % if the XHD black is connected
-        baseDir = '/Volumes/blackbox/SA2';
-    else
-        baseDir = '/Users/Kelly/SA2';
+elseif strcmp(cName,'cnic2')               % cni server
+    baseDir = '/home/kelly/SA2';
+else                                       % assume it's moxie
+       baseDir = '/Users/Kelly/SA2';
     end
 end
 
