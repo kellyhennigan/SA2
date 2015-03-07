@@ -77,7 +77,8 @@ elseif strcmp(subgroup,'best')
     subjs = best_subjs;
 elseif strcmp(subgroup,'q')
     subjs = q_subjs;
-
+elseif strcmp(subgroup,'dti')
+    subjs = dti_subjs;
 elseif any(strcmp(num2str(subgroup),all_subjs)) % allow input of a subj num to get the cb code
     subjs = all_subjs(find(strcmpi(num2str(subgroup),all_subjs))); 
 else
