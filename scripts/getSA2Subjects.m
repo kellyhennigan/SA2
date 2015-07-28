@@ -8,6 +8,7 @@ function [subjs,CB] = getSA2Subjects(subgroup)
 % 10 - good; 
 % 11 - good 
 % 12 - didn't get >55% correct for gains and/or losses
+% 13 - only dti data
 % 14 - good 
 % 15 - good 
 % 16 - didn't get >55% correct for gains and/or losses; fell asleep a
@@ -28,8 +29,8 @@ function [subjs,CB] = getSA2Subjects(subgroup)
 
 
 % all subjects for which there is a full set of behavioral data
-all_subjs = {'9','10','11','12','14','15','16','17','18','19','20','21',...
-    '23','24','25','26','27','28','29'};
+all_subjs = {'9','10','11','12','13','14','15','16','17','18','19','20','21',...
+    '23','24','25','26','27','28','29','30'};
 
 
 
@@ -60,9 +61,12 @@ q_subjs = {'10','11','12','14','15','16','17','18','19','20','21',...
     '23','24','25','26','27','28','29','30'};
 
 % subjects that we have dti data for 
-dti_subjs = {'9','10','11','12','15','16','17','18','19','20','21',...
+dti_subjs = {'9','10','11','12','13','15','16','17','18','19','20','21',...
     '23','24','25','28','29','30'};
 
+
+dti_q_subjs = {'10','11','12','15','16','17',...
+    '18', '19', '20','21','23','24','25','28','29','30'};
 
 
 if notDefined('subgroup')
@@ -79,6 +83,8 @@ elseif strcmp(subgroup,'q')
     subjs = q_subjs;
 elseif strcmp(subgroup,'dti')
     subjs = dti_subjs;
+elseif strcmp(subgroup,'dti_q')
+    subjs = dti_q_subjs;
 elseif any(strcmp(num2str(subgroup),all_subjs)) % allow input of a subj num to get the cb code
     subjs = all_subjs(find(strcmpi(num2str(subgroup),all_subjs))); 
 else
@@ -93,6 +99,7 @@ subjCBLookup = [
 10    2
 11    2
 12    2
+13    nan
 14    1
 15    1
 16    2

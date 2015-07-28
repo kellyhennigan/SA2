@@ -38,7 +38,7 @@ if ~notDefined('subject')
     p.subj = fullfile(p.data, subject);  % subject directory
     p.behavior    = fullfile(p.subj, 'behavior/');
     p.design_mats = fullfile(p.subj, 'design_mats/');
-    p.dti_proc   = fullfile(p.subj, 'dti_proc/');
+    p.dti_proc   = fullfile(p.subj, 'dti80trilin/');
     p.fmap_proc       = fullfile(p.subj, 'fmap_proc/');
     p.func_proc   = fullfile(p.subj, 'func_proc/');
     p.raw         = fullfile(p.subj, 'raw/');
