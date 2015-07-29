@@ -12,19 +12,19 @@ nims_exp_dir = '/nimsfs/smcclure/SA2/'		# experiment main dir on nims
 data_dir = '/home/hennigan/SA2/data/'		# main data dir 
 
 
-subject = '30'								# subject id (string)
-exam_no = '8313'							# cni exam number (string)
-nims_exam_dir = '20141103_1550_8313/'		# string IDing the subject's data directory on nims
+subject = '9'								# subject id (string)
+exam_no = '7005'							# cni exam number (string)
+nims_exam_dir = '20140523_1230_7005/'		# string IDing the subject's data directory on nims
 
 
 # define the scan numbers associated with each scan: 
-func_runs=[7,9,0,0,0,0]  # should correspond to runs 1,2,3,4,5,6, respectively 
-t1=3
-t2pd=10
-dti=12
-fmaps=[5,0,0,0] 	# should correspond to fieldmaps 1,2,3,4, respectively
-cal_scan1 = 9 		 # scan number corresponding to the calibration scan run before functional run 1 
-cal_scan4 = 18 		 # scan number corresponding to the calibration scan run before functional run 4
+func_runs=[6,8,10,17,19,21]  # should correspond to runs 1,2,3,4,5,6, respectively 
+t1=13
+t2pd=12
+dti=15
+fmaps=[0,0,0,0] 	# should correspond to fieldmaps 1,2,3,4, respectively
+cal_scan1 = 5 		 # scan number corresponding to the calibration scan run before functional run 1 
+cal_scan4 = 16 		 # scan number corresponding to the calibration scan run before functional run 4
 
 
 
@@ -132,14 +132,14 @@ for r in fmaps:
 	
 # calibration scans
 filePath = subj_nims_dir+exam_no+'_'+str(cal_scan1)+'_1_mux3_cal_DEV/'+exam_no+'_'+str(cal_scan1)+'_1.nii.gz'
-	if os.path.exists(filePath):
-		cmd = 'ln -s '+filePath+' cal_run1.nii.gz'
-		os.system(cmd)	
+if os.path.exists(filePath):
+	cmd = 'ln -s '+filePath+' cal_run1.nii.gz'
+	os.system(cmd)	
 		
 filePath = subj_nims_dir+exam_no+'_'+str(cal_scan4)+'_1_mux3_cal_DEV/'+exam_no+'_'+str(cal_scan4)+'_1.nii.gz'
-	if os.path.exists(filePath):
-		cmd = 'ln -s '+filePath+' cal_run4.nii.gz'
-		os.system(cmd)	
+if os.path.exists(filePath):
+	cmd = 'ln -s '+filePath+' cal_run4.nii.gz'
+	os.system(cmd)	
 	
 
 

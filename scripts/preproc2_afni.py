@@ -19,7 +19,9 @@ import os,sys
 
 # set up study-specific directories and file names, etc.
 data_dir = '/home/hennigan/SA2/data/'	
-subjects = ['10','11','12'] # subjects to process
+
+#subjects = ['9','10','11','12','14','15','16','17','18','19','20','21','23','24','25','26','27','29'] # subject to process
+subjects = ['9'] # subjects to process
 
 ##### commands to run: # 
 # cat vr_run1.1D  vr_run2.1D  vr_run3.1D  vr_run4.1D  vr_run5.1D vr_run6.1D > vr_ALL.1D

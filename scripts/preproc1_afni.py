@@ -7,9 +7,9 @@
 import os,sys
 
 # set up study-specific directories and file names, etc.
-data_dir = '/Volumes/blackbox/SA2/data'		# experiment main data directory
-#data_dir = '/home/hennigan/SA2/data'	
-subjects = ['24'] # subjects to process
+#data_dir = '/Volumes/blackbox/SA2/data'		# experiment main data directory
+data_dir = '/home/hennigan/SA2/data'	
+subjects = ['18','19']  # subjects to process
 runs = [1,2,3,4,5,6] 					# scan runs to process
 
 
@@ -89,7 +89,7 @@ for subject in subjects:
 		# slice time correct
 		if doCorrectSliceTiming:
 			outStr = 'a'+inStr
-			cmd = '3dTshift -verbose -prefix '+outStr+' -tpattern @'+st_file+' '+inStr+'+orig.'
+			cmd = '3dTshift -prefix '+outStr+' -tpattern @'+st_file+' '+inStr+'+orig.'
 			print cmd
 			os.system(cmd)
 			inStr = outStr	# update string to reflect most recent processing step
@@ -99,7 +99,7 @@ for subject in subjects:
 		if doCorrectMotion:
 			outStr = 'r'+inStr
 			mc_file = mc_str+str(r)+'.1D'	# file name for mc parameters
-			cmd = '3dvolreg -verbose -base '+ref_file+' -zpad 4 -1Dfile '+mc_file+' -prefix '+outStr+' '+inStr+'+orig.'
+			cmd = '3dvolreg -base '+ref_file+' -zpad 4 -1Dfile '+mc_file+' -prefix '+outStr+' '+inStr+'+orig.'
 			print cmd
 			os.system(cmd)
 			inStr = outStr	# update string to reflect most recent processing step

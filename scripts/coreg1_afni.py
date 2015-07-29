@@ -1,10 +1,11 @@
 #!/usr/bin/python
 
-# filename: coreg_afni.py
-# script to coregister t1,t2,pd, and func data from experiment SA2. I'm using the 
-# epi calibration scan from the first run because it should be in good alignment with
-# the func_ref_vol (they were separated in time by tends of seconds and it has the same 
-# slice prescription) but it has better contrast than the func_ref_vol, so it could help 
+# filename: coreg_afni_1.py
+# this script along with coreg_afni_2.py coregister t1,t2,pd, and func data from experiment SA2. 
+
+# coreg_afni_1 can be performed before func data is pre-processed; coreg_afni_2 has to be done after.
+
+# I'm using the  epi calibration scan from the first run because it should be in good alignment with the func_ref_vol (they were separated in time by tends of seconds and it has the same slice prescription) but it has better contrast than the func_ref_vol, so it could help 
 # improve cross-modality alignment.
 
 # for every coregistered transform (e.g., vol A to vol B) I'm saving the 12-parameter 
@@ -32,8 +33,10 @@ import os,sys
 #data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
 data_dir = '/home/hennigan/SA2/data/'	
 
-subjects = ['9']			# subject to process
-runs = ['1','2','3','4','5','6'] # functional scan runs
+# subjects to process
+#subjects = ['9','10','11','12','14','15','16','17','18','19','20','21','23','24','25','26','27','29']  
+
+subjects = ['25','26','27','29']  
 
 ##########################################################################################
 
@@ -116,28 +119,31 @@ for subject in subjects:
 	print 'done'
 	
 	
+###################### next part is done in the script, done in coreg_afni_2
+
 	##### normalize t1 to tlrc
- 	print 'normalizating t1 scan to tlrc template for SUBJECT '+subject+' ...'
- 	cmd = '@auto_tlrc -base '+data_dir+'TT_N27+tlrc. -input t1_al+orig. -no_ss'
- 	os.system(cmd)
- 	print 'done'
+ 	#print 'normalizating t1 scan to tlrc template for SUBJECT '+subject+' ...'
+ 	#cmd = '@auto_tlrc -base '+data_dir+'TT_N27+tlrc. -input t1_al+orig. -no_ss'
+ 	#os.system(cmd)
+ 	#print 'done'
+
 
 	##### normalize t2,pd, and functional data to tlrc
- 	print 'normalizating func data to  tlrc template for SUBJECT '+subject+' ...'
- 	cmd = '@auto_tlrc -apar t1_al+tlrc. -input rcal1+orig. -dxyz 1.6'
- 	os.system(cmd)
- 	cmd = '@auto_tlrc -apar t1_al+tlrc. -input ref1.nii.gz -dxyz 1.6'
- 	os.system(cmd)
- 	cmd = '@auto_tlrc -apar t1_al+tlrc. -input pd_al+orig -dxyz 1.6'
- 	os.system(cmd)
- 	cmd = '@auto_tlrc -apar t1_al+tlrc. -input t2_al+orig -dxyz 1.6'
- 	os.system(cmd)
-	for r in runs:
-		cmd = '@auto_tlrc -apar t1_al+tlrc. -input psraorun'+str(r)+'+orig. -dxyz 1.6'
-		os.system(cmd)
-		cmd = '3drename psraorun'+str(r)+'+tlrc. pp_run'+str(r)+'+tlrc'
-		os.system(cmd)
- 	print 'done'
+ 	#print 'normalizating func data to  tlrc template for SUBJECT '+subject+' ...'
+ 	#cmd = '@auto_tlrc -apar t1_al+tlrc. -input rcal1+orig. -dxyz 1.6'
+ 	#os.system(cmd)
+ 	#cmd = '@auto_tlrc -apar t1_al+tlrc. -input ref1.nii.gz -dxyz 1.6'
+ 	#os.system(cmd)
+ 	#cmd = '@auto_tlrc -apar t1_al+tlrc. -input pd_al+orig -dxyz 1.6'
+ 	#os.system(cmd)
+ 	#cmd = '@auto_tlrc -apar t1_al+tlrc. -input t2_al+orig -dxyz 1.6'
+ 	#os.system(cmd)
+	#for r in runs:
+	#	cmd = '@auto_tlrc -apar t1_al+tlrc. -input psraorun'+str(r)+'+orig. -dxyz 1.6'
+	#	os.system(cmd)
+	#	cmd = '3drename psraorun'+str(r)+'+tlrc. pp_run'+str(r)+'+tlrc'
+	#	os.system(cmd)
+ 	#print 'done'
 
 	
 
