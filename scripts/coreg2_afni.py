@@ -1,12 +1,7 @@
 #!/usr/bin/python
 
-# filename: coreg2_afni.py
-
-# script, along with coreg1_afni.py, coregisters t1,t2,pd, and func data from experiment SA2.
-
-# coreg1_afni & coreg2_afni do the same thing as corg_afni.py, its just broken into 2 scripts so that the first part can be run before functional data is pre-processed, while the 2nd script requires functional pre-processing to be done.
-
-# I'm using the 
+# filename: coreg_afni.py
+# script to coregister t1,t2,pd, and func data from experiment SA2. I'm using the 
 # epi calibration scan from the first run because it should be in good alignment with
 # the func_ref_vol (they were separated in time by tends of seconds and it has the same 
 # slice prescription) but it has better contrast than the func_ref_vol, so it could help 
@@ -37,10 +32,10 @@ import os,sys
 #data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
 data_dir = '/home/hennigan/SA2/data/'	
 
-#subjects = ['9','10','11','12','14','15','16','17','18','19','20','21','23','24','25','26','27','29'] # subject to process
-subjects = ['10']
-
+subjects = ['9','10']			# subject to process
 runs = ['1','2','3','4','5','6'] # functional scan runs
+
+inStr = 'raorun' # string to identify func files to normalize
 
 ##########################################################################################
 
@@ -53,96 +48,30 @@ for subject in subjects:
 	subj_dir = data_dir+str(subject) # subject dir
 	raw_dir = subj_dir+'/raw'		 # raw dir
 	pp_dir = subj_dir+'/func_proc'	 # func_proc dir
-	t1_dir = subj_dir+'/t1'	 # t1 dir
-	roi_dir = subj_dir+'/ROIs'	 # roi dir
-	######### skull strip t1,t2,pd images
 	
-	#os.chdir(raw_dir) 				 # cd to raw directory
-	
-	#cmd = '3dSkullStrip -prefix t1 -input t1_raw.nii.gz'  		# t1-weighted volume 
-	#os.system(cmd)
-
-	#cmd = '3dSkullStrip -prefix t2 -input t2.nii.gz'			# t2-weighted volume
-	#os.system(cmd)
-
-	#cmd = '3dSkullStrip -prefix pd -input pd.nii.gz'			# pd volume
-	#os.system(cmd)
-
-	#cmd = 'mv *+orig* '+pp_dir					# move files to func_proc dir
-	#os.system(cmd)
-
 	os.chdir(pp_dir) 	 # cd to pp directory			
 
-
-	######### coregister calibration scans to functional reference scan  
- 	#print 'coregistering calibration scan to functional reference volume for SUBJECT '+subject+' ...'
- 	#cmd = '3dvolreg -base ref1.nii.gz -zpad 4 -1Dfile vr_cal1 -prefix rcal1 cal1.nii.gz'
- 	#os.system(cmd)
- 	#print 'done'
-	
-
-	
-	################### method 1: register everything to func native space > tlrc space
-
-                      
-	######### coregister t1,t2,and pd scans to functional scans
-	# NOTE: this may require using the nudge plug-in first
-	#print 'coregistering t1,t2,pd, and functional data for SUBJECT '+subject+' ...'
-	#cmd = 'align_epi_anat.py -anat t1+orig. -epi rcal1+orig. -epi_base 0 -anat2epi -partial_coverage -anat_has_skull no -epi_strip 3dAutomask -big_move -AddEdge'
-	#os.system(cmd)
-	#cmd = 'align_epi_anat.py -dset1 pd+orig. -dset2 rcal1+orig. -dset1to2 -partial_coverage -big_move -dset1_strip None -dset2_strip 3dAutomask -child_dset1 t2+orig.'
-	#os.system(cmd)
-	#print 'done'
-	
-	
+  	
 	##### normalize t1 to tlrc
- 	print 'normalizing t1 scan to tlrc template for SUBJECT '+subject+' ...'
+ 	print 'normalizating t1 scan to tlrc template for SUBJECT '+subject+' ...'
  	cmd = '@auto_tlrc -base '+data_dir+'TT_N27+tlrc. -input t1_al+orig. -no_ss'
-	print(cmd) 	
-	os.system(cmd)
+ 	os.system(cmd)
  	print 'done'
 
 	##### normalize t2,pd, and functional data to tlrc
- 	print 'normalizing func data to  tlrc template for SUBJECT '+subject+' ...'
+ 	print 'normalizating func data to  tlrc template for SUBJECT '+subject+' ...'
  	cmd = '@auto_tlrc -apar t1_al+tlrc. -input rcal1+orig. -dxyz 2'
-	print(cmd) 	
-	os.system(cmd)
+ 	os.system(cmd)
  	cmd = '@auto_tlrc -apar t1_al+tlrc. -input ref1.nii.gz -dxyz 2'
-	print(cmd)	
  	os.system(cmd)
  	cmd = '@auto_tlrc -apar t1_al+tlrc. -input pd_al+orig -dxyz 2'
-	print(cmd) 	
-	os.system(cmd)
+ 	os.system(cmd)
  	cmd = '@auto_tlrc -apar t1_al+tlrc. -input t2_al+orig -dxyz 2'
-	print(cmd)
  	os.system(cmd)
 	for r in runs:
-		cmd = '@auto_tlrc -apar t1_al+tlrc. -input psraorun'+str(r)+'+orig. -dxyz 2'
-		print(cmd)		
+		cmd = '@auto_tlrc -apar t1_al+tlrc. -input '+inStr+str(r)+'+orig. -dxyz 2'
 		os.system(cmd)
-		cmd = '3drename psraorun'+str(r)+'+tlrc. pp_run'+str(r)+'+tlrc'
-		print(cmd)
-		os.system(cmd)
-	print 'done'
-
-	
-	##### bring DA ROI into group space with functional dimensions
-	os.chdir(t1_dir) 	 # cd to t1 directory			  	
-	print 'normalizing t1_fs & DA ROI mask to tlrc template for SUBJECT '+subject+' ...'
-  	cmd = '@auto_tlrc -base '+data_dir+'TT_N27+tlrc. -input t1_fs_bet.nii.gz -no_ss'
-	print(cmd)  	
-	os.system(cmd)
-
-	os.chdir(roi_dir) 	 # cd to t1 directory	
-  	cmd = '@auto_tlrc -apar ../t1/t1_fs_bet_at.nii -input DA.nii.gz'
-	print(cmd)
-	os.system(cmd)
-  	cmd = '3dresample -master '+pp_dir+'/ref1_at.nii -prefix DA_at_func -inset DA_at.nii'
-	print(cmd)
-	os.system(cmd)
-	
-	print 'done'
-
+ 	print 'done'
 
 	
 	################### method 2: register everything to the t1 native space > tlrc space
@@ -173,5 +102,6 @@ for subject in subjects:
 # 	os.system(cmd)
 # 	print 'done'
 # 	
+
 
 	

@@ -9,18 +9,14 @@ import os,sys
 # set up study-specific directories and file names, etc.
 #data_dir = '/Volumes/blackbox/SA2/data'		# experiment main data directory
 data_dir = '/home/hennigan/SA2/data'	
-subjects = ['18','19']  # subjects to process
+subjects = ['19']  # subjects to process
 runs = [1,2,3,4,5,6] 					# scan runs to process
 
 
 # which pre-processing steps to do? 1 to do, 0 to not do
 doOmit1stVols = 1			# omit 1st volumes from each run? adds prefix 'o'
-doCorrectSliceTiming = 1		# correct for slice-timing differences? adds prefix 'a'
+doCorrectSliceTiming = 1	# correct for slice-timing differences? adds prefix 'a'
 doCorrectMotion = 1			# correct for head movement? adds prefix 'r'
-doSmooth = 1				# smooth data? adds prefix 's'					
-doConvertUnits = 1 			# convert from raw to % change units? adds prefix 'p'
-doConcatRuns = 0  		    	# concatenate all functional runs? calls file pp_all
-#doCoreg = 0				# coregister t1 to functional data? adds prefix 'c' to t1 file
 
 
 ################# define relevant variables for each pre-processing step as needed
@@ -34,12 +30,6 @@ if doCorrectMotion:
 	ref_file = 'ref1.nii.gz'	# reference volume filepath (must be in subject's func_proc directory)
 	mc_str = 'vr_run'					# string for mc_params files
 
-if doSmooth: 
-	smooth_mm = 3 						# fwhm gaussian kernel to use for smoothing (in mm)
-
-if doConcatRuns:
-	all_mc_str = 'vr_ALL' 				# string to use for concatenated mc params			
-	all_data_str = 'pp_ALL'				# " " concatenated data
 
 
 ##########################################################################################
@@ -103,67 +93,27 @@ for subject in subjects:
 			print cmd
 			os.system(cmd)
 			inStr = outStr	# update string to reflect most recent processing step
+		
 			
 			# save out plots of the motion correction params
 			cmd = '1dplot -dx 5 -xlabel Time -volreg -png '+mc_str+str(r)+' '+mc_file
-
-			
-		# smooth
-		if doSmooth:
-			outStr = 's'+inStr
-			cmd = '3dmerge -1blur_fwhm '+str(smooth_mm)+' -doall -prefix '+outStr+' '+inStr+'+orig'
 			print cmd
-			os.system(cmd)
-			inStr = outStr	# update string to reflect most recent processing step
 			
-			
-		# if this is the first run, make a binary mask of the smoothed data
-		if r==1:
-			cmd = '3dAutomask -prefix func_mask_r1 '+inStr+'+orig'
-			print cmd
-			os.system(cmd)
-		
-		
-		# convert from raw to percent BOLD signal change units
-		if doConvertUnits:
-			outStr = 'p'+inStr
-			cmd = '3dTstat -mean -prefix mean_run'+str(r)+' '+inStr+'+orig; 3dcalc -a '+inStr+'+orig -b mean_run'+str(r)+"+orig -expr '(a/b)*100' -prefix "+outStr
-			print cmd
-			os.system(cmd)
-			inStr = outStr	# string signifying the most recent processing step
-			
-			os.remove('mean_run'+str(r)+'+orig.BRIK')
-			os.remove('mean_run'+str(r)+'+orig.HEAD')
-			
-			
-		# convert from raw to percent BOLD signal change units
-		if doConcatRuns:
 			# update strings of all mc_param files and processed data files
 			mc_files = mc_files+' '+mc_file
-			pp_files = pp_files+' '+inStr+'+orig'
 	
-		# end of run loop
 		
-	if doConcatRuns:	
-		# concatenate mc_param files 
-		cmd = 'cat '+mc_files+' > '+all_mc_str+'.1D'
-		print cmd
-		os.system(cmd)
+	########### end of run loop
+			
+	# concatenate mc_param files 
+	cmd = 'cat '+mc_files+' > vr_ALL.1D'
+	print cmd
+	os.system(cmd)
 
-		# save out a plot of all mc_params
-		cmd = '1dplot -dx 163 -xlabel Time -volreg -png mparams_fig -pngs 2000 '+all_mc_str+'.1D'
-		print cmd
-		os.system(cmd)
-
-		# concatenate all runs
-		cmd = '3dTcat -prefix '+all_data_str+' '+pp_files
-		print cmd
-		os.system(cmd)
-	
-   		# bet concatenated runs
-		cmd = '3dAutomask -apply_prefix '+all_data_str+'_bet '+all_data_str+'+orig.'
-		print cmd
-		os.system(cmd)
+	# save out a plot of all mc_params
+	cmd = '1dplot -dx 163 -xlabel Time -volreg -png mparams_fig -pngs 2000 vr_ALL.1D'
+	print cmd
+	os.system(cmd)
 	
 		
 	print 'FINISHED SUBJECT '+subject

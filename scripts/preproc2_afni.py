@@ -1,78 +1,124 @@
 #!/usr/bin/python
 
-# filename: preproc2_afni.py
-# script to continue pre-processing data after running script, preproc_afni.py
-
-# check the following: 
-
-# concatenate and plot motion parameters - 
-# is there a big difference between runs 1-3 and 4-6? 
-# if so, for those subjects, re-process from motion correction stage 
-# using -twopass -twodup options on 3dvolreg for runs 4-6
-
-# check out the binary mask - does it look ok? 
-# if so, concatenate runs 1-6 and use the mask to zero out non-brain voxels
-
+# filename: preproc_afni.py
+# script to do pre-processing of functional data (steps listed below)
 
 
 import os,sys
 
 # set up study-specific directories and file names, etc.
-data_dir = '/home/hennigan/SA2/data/'	
+#data_dir = '/Volumes/blackbox/SA2/data'		# experiment main data directory
+data_dir = '/home/hennigan/SA2/data'	
+subjects = ['12']  # subjects to process
+runs = [1,2,3,4,5,6] 					# scan runs to process
 
-#subjects = ['9','10','11','12','14','15','16','17','18','19','20','21','23','24','25','26','27','29'] # subject to process
-subjects = ['9'] # subjects to process
 
-##### commands to run: # 
-# cat vr_run1.1D  vr_run2.1D  vr_run3.1D  vr_run4.1D  vr_run5.1D vr_run6.1D > vr_ALL.1D
-# 1dplot -dx 163 -xlabel Time -volreg -png vr_ALL vr_ALL.1D
-# 
-# 1dplot -dx 5 -xlabel Time -volreg -png vr_run1 vr_run1.1D
-# 1dplot -dx 5 -xlabel Time -volreg -png vr_run2 vr_run2.1D
-# 1dplot -dx 5 -xlabel Time -volreg -png vr_run3 vr_run3.1D
-# 1dplot -dx 5 -xlabel Time -volreg -png vr_run4 vr_run4.1D
-# 1dplot -dx 5 -xlabel Time -volreg -png vr_run5 vr_run5.1D
-# 1dplot -dx 5 -xlabel Time -volreg -png vr_run6 vr_run6.1D
-# 
+# which pre-processing steps to do? 1 to do, 0 to not do
+doSmooth = 1				# smooth data? adds prefix 's'					
+doConvertUnits = 1 			# convert from raw to % change units? adds prefix 'p'
+doBet = 1				# brain-extract data?
 
-all_mc_str = 'vr_ALL' 				
-all_data_str = 'pp_ALL'
+################# define relevant variables for each pre-processing step as needed
+
+startStr = 'raorun' # reflects pre-processing steps done in preproc1_afni.py
+
+spaceStr = 'tlrc'  # either 'orig' or 'tlrc' to signify space of files
+
+if doSmooth: 
+	smooth_mm = 3 						# fwhm gaussian kernel to use for smoothing (in mm)
+
 
 
 ##########################################################################################
+# DO IT
+
+
+os.chdir(data_dir)
+cdir = os.getcwd()
+print 'Current working directory: '+cdir
 
 
 # now loop through subjects, clusters and bricks to get data
 for subject in subjects:
+	
+	print 'WORKING ON SUBJECT '+subject
+	
+	# define subject's raw & pre-processed directories 
+	outDir = data_dir+'/'+subject+'/func_proc/' 
 
-	pp_dir = data_dir+subject+'/func_proc/' # this subject's pre-proc dir
+	os.chdir(outDir) 					
 
-
-	os.chdir(pp_dir) 				# cd to subject's func_proc directory
-	cdir = os.getcwd()
-	print 'Current working directory: '+cdir
-
-    									
-	# concatenate mc_param files 
-	cmd = 'cat vr_run1.1D  vr_run2.1D  vr_run3.1D  vr_run4.1D  vr_run5.1D vr_run6.1D > '+all_mc_str+'.1D'
-	os.system(cmd)
-
-	# save out a plot of all mc_params
-	cmd = '1dplot -dx 163 -xlabel Time -volreg -png '+all_mc_str+' '+all_mc_str+'.1D'
-	os.system(cmd)
-
-
-	# concatenate all runs
-	cmd = '3dTcat -prefix '+all_data_str+' psraorun1+orig. psraorun2+orig. psraorun3+orig. psraorun4+orig. psraorun5+orig. psraorun6+orig.'
-	print cmd
-	os.system(cmd)
-
-	# bet concatenated runs
-	cmd = '3dAutomask -apply_prefix '+all_data_str+'_bet '+all_data_str+'+orig.'
-	print cmd
-	os.system(cmd)
-
-
-
-
+	
+	for r in runs:
+			
+		inStr = startStr+str(r)  # file string
 		
+		# smooth
+		if doSmooth:
+			outStr = 's'+inStr
+			cmd = '3dmerge -1blur_fwhm '+str(smooth_mm)+' -doall -prefix '+outStr+' '+inStr+'+'+spaceStr
+			print cmd
+			os.system(cmd)
+			inStr = outStr	# update string to reflect most recent processing step
+			
+			
+		# at this point, make a binary mask of data 
+		cmd = '3dAutomask -prefix mask_run'+str(r)+' '+inStr+'+'+spaceStr
+		print cmd
+		os.system(cmd)
+		
+		
+		# convert from raw to percent BOLD signal change units
+		if doConvertUnits:
+			outStr = 'p'+inStr
+			cmd = '3dTstat -mean -prefix mean_run'+str(r)+' '+inStr+'+'+spaceStr
+			print cmd
+			os.system(cmd)
+			cmd = '3dcalc -a '+inStr+str(r)+'+'+spaceStr+' -b mean_run'+str(r)+'+'+spaceStr+" -expr '(a/b)*100' -prefix "+outStr
+			print cmd
+			os.system(cmd)			
+			inStr = outStr	# string signifying the most recent processing step
+			
+			os.remove('mean_run'+str(r)+'+'+spaceStr+'.BRIK')
+			os.remove('mean_run'+str(r)+'+'+spaceStr+'.HEAD')
+		
+		
+		
+########### end of run loop
+		
+	if doBet: 
+		outStr = inStr+'_bet'
+		cmd = '3dMean -datum float -prefix mean_mask mask_run*'
+		print cmd
+		os.system(cmd)
+		cmd = '3dcalc -datum byte -prefix func_mask -a mean_mask'+spaceStr+" -expr 'step(a-0.75)'"
+		print cmd
+		os.system(cmd)
+		
+		# delete mean mask file
+		os.remove('mean_mask'+str(r)+'+'+spaceStr+'.BRIK')
+		os.remove('mean_mask'+str(r)+'+'+spaceStr+'.HEAD')
+		
+		for r in runs:
+		
+			cmd = '3dcalc -a '+inStr+'+'+spaceStr+' -b func_mask+'+spaceStr+" -expr 'a*b' -prefix "+outStr
+			print cmd
+			os.system(cmd)
+	
+			# delete mask for individual runs
+			os.remove('mask_run'+str(r)+'+'+spaceStr+'.BRIK')
+			os.remove('mask_run'+str(r)+'+'+spaceStr+'.HEAD')
+					
+		inStr = outStr	# update string to reflect most recent processing step
+		
+		
+	# finally, rename files to pp_run to signify pre-processing is complete 
+	for r in runs:
+		cmd = '3drename '+inStr+str(r)+'+'+spaceStr+' pp_run'+str(r)+'+'+spaceStr
+		print cmd
+		os.system(cmd)
+		
+	
+	print 'FINISHED SUBJECT '+subject
+			
+				
