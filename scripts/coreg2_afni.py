@@ -32,7 +32,7 @@ import os,sys
 #data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
 data_dir = '/home/hennigan/SA2/data/'	
 
-subjects = ['9','10']			# subject to process
+subjects = ['16','18','19','20']			# subject to process
 runs = ['1','2','3','4','5','6'] # functional scan runs
 
 inStr = 'raorun' # string to identify func files to normalize
@@ -53,13 +53,13 @@ for subject in subjects:
 
   	
 	##### normalize t1 to tlrc
- 	print 'normalizating t1 scan to tlrc template for SUBJECT '+subject+' ...'
+ 	print 'normalizing t1 scan to tlrc template for SUBJECT '+subject+' ...'
  	cmd = '@auto_tlrc -base '+data_dir+'TT_N27+tlrc. -input t1_al+orig. -no_ss'
  	os.system(cmd)
  	print 'done'
 
 	##### normalize t2,pd, and functional data to tlrc
- 	print 'normalizating func data to  tlrc template for SUBJECT '+subject+' ...'
+ 	print 'normalizing func data to  tlrc template for SUBJECT '+subject+' ...'
  	cmd = '@auto_tlrc -apar t1_al+tlrc. -input rcal1+orig. -dxyz 2'
  	os.system(cmd)
  	cmd = '@auto_tlrc -apar t1_al+tlrc. -input ref1.nii.gz -dxyz 2'
