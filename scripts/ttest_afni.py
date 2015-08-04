@@ -17,7 +17,7 @@ import os,sys,re,glob
 data_dir = '/home/hennigan/SA2/data/'	
 #data_dir = '/home/kelly/SA2/data/'
 
-res_dir = data_dir+'results_mb/'  # directory containing glm stat files
+res_dir = data_dir+'results_wb/'  # directory containing glm stat files
 
 
 in_str = '_glm+tlrc.HEAD'  # identify file string
@@ -50,7 +50,7 @@ out_sub_labels =  ['gain_win-nothing',
 'cue_period']
 
 	
-out_str = 'GLT_B'   # string to include in single subject files 
+out_str = 'GLT_coeff'   # string to include in single subject files 
 out_str_t = 'all_t' # string for t-test results file 
 ##########################################################################################
 
@@ -71,18 +71,16 @@ for infile in infiles:
 
 
 # conduct a t-test on all extracted volumes
-# cmd = "3dttest++ -prefix "+out_str_t+" -brickwise -mask group_mask.nii -setA '*"+out_str+"+tlrc.HEAD'"
-# print cmd
-# os.system(cmd)
+cmd = "3dttest++ -prefix "+out_str_t+" -brickwise -setA '*"+out_str+"+tlrc.HEAD'"
 
-cmd = "3dttest++ -prefix "+out_str_t+" -brickwise -mask ../ROIs_tlrc/DA_bin_mask.nii.gz -setA '*"+out_str+"+tlrc.HEAD'"
+#cmd = "3dttest++ -prefix "+out_str_t+" -brickwise -mask ../ROIs_tlrc/DA_bin_mask.nii.gz -setA '*"+out_str+"+tlrc.HEAD'"
 print cmd
 os.system(cmd)
 
 
 i = 0  # sub label counter
 for out_sub_label in out_sub_labels:
-	cmd = '3drefit -sublabel '+str(i)+' '+out_sub_label+'_B '+out_str_t+'+tlrc'
+	cmd = '3drefit -sublabel '+str(i)+' '+out_sub_label+'_coeff '+out_str_t+'+tlrc'
 	print cmd 
 	os.system(cmd)
 	i=i+1
