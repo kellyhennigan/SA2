@@ -77,7 +77,7 @@ switch pstr
         
     otherwise % must be a PE parametric mod
         
-        ab = getRLparams('all',stim); % get best fitting RL params for gains
+        ab = getRLparams('fmri',stim); % get best fitting RL params for gains
         [~,PE,~] = fitQLearningMod(ab, choices, outcomes);
         
         switch pstr

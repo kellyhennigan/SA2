@@ -1,11 +1,17 @@
 
+clear all
+close all
+
+paths = getSA2Paths()
+cd(paths.data)
+
 % subs = getSA2Subjects('q');
 
-subs=getSA2Subjects('dti');
+subs=getSA2Subjects('fmri');
 
 saveOut = 0; % 1 to save out, 0 otherwise
 saveDir = fullfile(paths.data, 'q_data');
-outStr = '_dti'; % this string will be appended to out names
+outStr = ''; % this string will be appended to out names
 
 
 %%%%%%%%%%% discounting parameters

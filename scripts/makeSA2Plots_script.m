@@ -13,10 +13,10 @@ paths=getSA2Paths()
 
 
 % define subjects
-subStr = 'RL'; % 'all', etc.
+subStr = 'fmri'; % 'all', etc.
 
 
-savePlots = 1;
+savePlots = 0;
 saveDir = ['/Users/Kelly/SA2/figures']
 
 
@@ -39,6 +39,7 @@ figH = setupFig();
 
 col_idx = 0; % color index
 
+cc=[];
 for cc=1:2                    % context - base or stress
 
 for cond = 1:numel(Conds)      % gains and losses
@@ -54,10 +55,10 @@ for cond = 1:numel(Conds)      % gains and losses
     choices(choices==2)=0;  % recode choices as 0 and 1 for plotting
     
     col = getSA2Colors(cond,cc); % get color for plotting 
-    
+%     col=mean(col)
     scatter([1:36]',nanmean(choices,2),40,col,'filled')
     
-    plot([1:36]',nanmean(choices,2),'color',col)
+    plot([1:36]',nanmean(choices,2),'color',col,'linewidth',1.5)
     
     plot([1:36]',nanmean(Pc1,2),'color',[.5 .5 .5])
     
@@ -66,6 +67,7 @@ end
 
 yT = get(gca,'YTick')
 set(gca,'YTickLabel',yT.*100)
+xlim([1 36])
 xlabel('trial number')
 ylabel('Observed and Modeled Choices (%)')
 
@@ -73,9 +75,10 @@ ylabel('Observed and Modeled Choices (%)')
 end
 
 if savePlots
-    outFPath = fullfile(saveDir,'Pchoices.pdf');
-    saveas(gcf,outFPath,'pdf');
-     saveas(gcf,outFPath,'epsc');
+    outFPath = fullfile(saveDir,'Pchoices');
+%     saveas(gcf,outFPath,'pdf');
+%      saveas(gcf,outFPath,'epsc');
+print(gcf,'-dpng','-r300',outFPath)
 end
 
 

@@ -14,8 +14,10 @@ import os,sys,re,glob
 
 # set up study-specific directories and file names, etc.
 #data_dir = '/Volumes/blackbox/SA2/data/'		# experiment main data directory
-data_dir = '/home/hennigan/SA2/data/'	
+#data_dir = '/home/hennigan/SA2/data/'	
 #data_dir = '/home/kelly/SA2/data/'
+data_dir = '/Users/Kelly/SA2/data/'
+
 
 res_dir = data_dir+'results_wb/'  # directory containing glm stat files
 
@@ -33,7 +35,8 @@ sub_labels = ['gain_win-nothing_GLT#0_Coef',
 'gainRPE_B-S_GLT#0_Coef',
 'gainSPE_B-S_GLT#0_Coef',
 'shockcue-neutralcue_GLT#0_Coef',
-'cue_period_GLT#0_Coef']
+'cue_period_GLT#0_Coef',
+'shock#0_Coef']
 
 
 out_sub_labels =  ['gain_win-nothing',
@@ -47,7 +50,8 @@ out_sub_labels =  ['gain_win-nothing',
 'gainRPE_B-S',
 'gainSPE_B-S',
 'shockcue-neutralcue',
-'cue_period']
+'cue_period',
+'shock']
 
 	
 out_str = 'GLT_coeff'   # string to include in single subject files 

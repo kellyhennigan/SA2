@@ -1,4 +1,4 @@
-function p = getRLparams(subStr,cond)
+function p = getRLGroupParams(subStr,cond)
 % --------------------------------
 % usage: return the best fitting parameter estimates
 % (learning rate a and inverse temperature B) found using fminsearch
@@ -11,6 +11,8 @@ function p = getRLparams(subStr,cond)
 %           'RL'
 %           'fmri'
 %   * note: see getSA2Subjects about what these subgroups mean
+% 
+%   subOrGroup - return params for each subject or as a group
 %
 %   cond - string or number specifying which condition (gain or loss) to
 %          return data for; should be either 'gain' or 1 for gains and
@@ -25,16 +27,27 @@ function p = getRLparams(subStr,cond)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if notDefined('subStr')
-    subStr = 'all';
+    subStr = 'fmri';
 end
 
+
+if notDefined('subOrGroup')
+    subOrGroup = 'group';
+end
+
+% return params for gains and/or losses? 
+if notDefined('cond')
+    cond = [1,2];
+end
+
+        
 if strcmpi(subStr,'RL')         % give params for 'RL'
     p = [0.2778    4.6715;
         0.3016    4.2917];
     
 elseif strcmp(subStr,'fmri')    % give params for 'fmri'
-    p = [0.1609    3.3481;
-        0.2017    3.1582];
+    p = [0.1609    3.3480;
+        0.2017    3.1583];
     
 else                            % give params for 'all'
     p = [0.1724    3.3236;
@@ -43,10 +56,7 @@ else                            % give params for 'all'
 end
 
 
-% return params for gains and/or losses? 
-if notDefined('cond')
-    cond = [1,2];
-end
+
 if strcmpi(cond, 'gain')
     cond = 1;
 elseif strcmpi(cond, 'loss')

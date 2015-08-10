@@ -17,7 +17,7 @@ scaleStr = 'impulsivity scores';
 fgMDir = [p.data '/fgMeasures'];
 
 
-fgMatName = 'naccR_n100.mat';
+fgMatName = 'naccR_n20.mat';
 % fgMatName = 'naccR_n20_afq_params.mat';
 
 fgMeasureToTest = 'MD'; % options are FA, MD, AD, or RD
@@ -29,7 +29,7 @@ outDir = '/Users/Kelly/SA2/figures/dti_q_corr';
 
 
 %  omit_subs = {'9','13'};
-omit_subs = {};
+omit_subs = {'13','28','30'};
 
 %%  get fiber group measures & tci data
 
@@ -105,17 +105,17 @@ end
 %% 
 
 % % % % get md values for each subject at the fiber group peak in FA
-% [peak_fa,peak_idx] = max(fa(:,6:20),[],2);
-% peak_idx=peak_idx+5;
-% for i=1:nSubs
-%     peak_md(i,1)=md(i,peak_idx(i));
-%     peak_ad(i,1)=ad(i,peak_idx(i));
-%     peak_rd(i,1)=rd(i,peak_idx(i));
-% end
-% fprintf(['\n\n TCIscore-MD corr at FA peak:\n r=%4.2f\n'],corr(scores,peak_md));
-% fprintf(['\n\n TCIscore-AD corr at FA peak:\n r=%4.2f\n'],corr(scores,peak_ad));
-% fprintf(['\n\n TCIscore-RD corr at FA peak:\n r=%4.2f\n'],corr(scores,peak_rd));
-% fprintf(['\n\n TCIscore-FA corr at FA peak:\n r=%4.2f\n'],corr(scores,peak_fa));
-% 
+[peak_fa,peak_idx] = max(fa(:,5:20),[],2);
+peak_idx=peak_idx+4;
+for i=1:nSubs
+    peak_md(i,1)=md(i,peak_idx(i));
+    peak_ad(i,1)=ad(i,peak_idx(i));
+    peak_rd(i,1)=rd(i,peak_idx(i));
+end
+fprintf(['\n\n TCIscore-MD corr at FA peak:\n r=%4.2f\n'],corr(scores,peak_md));
+fprintf(['\n\n TCIscore-AD corr at FA peak:\n r=%4.2f\n'],corr(scores,peak_ad));
+fprintf(['\n\n TCIscore-RD corr at FA peak:\n r=%4.2f\n'],corr(scores,peak_rd));
+fprintf(['\n\n TCIscore-FA corr at FA peak:\n r=%4.2f\n'],corr(scores,peak_fa));
+
 
 figure(1)

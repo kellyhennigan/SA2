@@ -69,6 +69,10 @@ dti_q_subjs = {'10','11','12','15','16','17',...
     '18', '19', '20','21','23','24','25','28','29','30'};
 
 
+fmri_dti_subjs = {'9','10','11','12','15','16','17',...
+    '18', '19', '20','21','23','24','25','29'};
+
+
 if notDefined('subgroup')
     subgroup = 'all';
 end
@@ -85,6 +89,9 @@ elseif strcmp(subgroup,'dti')
     subjs = dti_subjs;
 elseif strcmp(subgroup,'dti_q')
     subjs = dti_q_subjs;
+elseif strcmpi(subgroup,'FD')
+    subjs = fmri_dti_subjs;
+
 elseif any(strcmp(num2str(subgroup),all_subjs)) % allow input of a subj num to get the cb code
     subjs = all_subjs(find(strcmpi(num2str(subgroup),all_subjs))); 
 else
